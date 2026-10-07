@@ -17,13 +17,21 @@ Lint uses Ultracite Core and anti-slop plus a repository rule forbidding built-i
 
 ## Cloud integration tests
 
-Following [Alchemy tutorial part 3](https://alchemy.run/cloudflare/tutorial/part-3/), tests use `alchemy/Test/Bun` to deploy a stack, assert against its live URL, and destroy it afterward. Authenticate with Cloudflare first, build, then run:
+Following [Alchemy tutorial part 3](https://alchemy.run/cloudflare/tutorial/part-3/), tests use `alchemy/Test/Bun` to deploy a stack, assert against its live URL, and destroy it afterward on CI. Local runs retain the stack for inspection and faster reruns. Authenticate with Cloudflare first, build, then run:
 
 ```sh
-ALCHEMY_STAGE=test-unique-name bun run test:integration
+ALCHEMY_STAGE=test-local bun run test:integration
 ```
 
-This creates billable cloud resources. Local Alchemy state is ignored by Git; durable shared CI state, preview automation, and observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
+This creates billable cloud resources. Reuse the same isolated test stage locally. Set `CI=true` to run with automatic teardown. To remove a retained test stack explicitly:
+
+```sh
+bunx alchemy destroy --stage test-local
+```
+
+Following [tutorial part 1](https://alchemy.run/cloudflare/tutorial/part-1/), the stack and test harness both use `Cloudflare.state()`. The first plan, deploy, or dev command requests permission to bootstrap the Cloudflare state-store Worker and its supporting resources. Authenticate using `bunx alchemy profile`; confirm the intended Cloudflare account during setup. Deployment and account verification have not yet been completed. The tutorial's sample R2 bucket is omitted until an application feature needs storage.
+
+Preview automation and observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
 
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
 
