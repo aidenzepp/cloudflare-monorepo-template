@@ -1,0 +1,11 @@
+# API reference and OpenAPI
+
+The assembled `Api` in `apps/api/src/api.ts` is the source of truth. Effect generates the specification from endpoint schemas, declared errors, security, and annotations. Describe public behavior in those contracts rather than editing generated output.
+
+`apps/api/src/http.ts` registers both `/api/openapi.json` and `/api/docs` using Effect's HttpApiBuilder and bundled HttpApiScalar. Scalar supplies the interactive UI and request testing; there is no custom documentation frontend. Default font downloads are disabled. Both routes live under `/api/*` so Cloudflare's existing runWorkerFirst asset policy routes them through the Worker.
+
+Run `bun run api:export` from the repository root to write `generated/openapi.json` without connecting to Cloudflare. CI exports and uploads it as the `openapi` artifact. This enables downstream generators without maintaining a second API definition. The generated directory is ignored; no generated SDK or CLI is installed or published yet.
+
+Local HTTP tests compare the served specification with the assembled contract and verify that Scalar HTML contains the contract and bundled script. These checks do not exercise browser rendering or the interactive request button. API compatibility diffing and SDK/CLI generation remain separate future additions.
+
+References: [Effect HttpApiBuilder](https://effect.website/docs/v4/api/effect/http-api/HttpApiBuilder), [Effect Scalar integration](https://effect.website/docs/v4/api/effect/http-api/HttpApiScalar), and [Cloudflare Forge](https://github.com/cloudflare/forge). Forge currently describes its CLI as the first output and other generation targets as developing; reassess its support before adopting it.
