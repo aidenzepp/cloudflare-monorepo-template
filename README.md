@@ -27,3 +27,5 @@ This creates billable cloud resources. Local Alchemy state is ignored by Git; du
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
 
 Statement spacing inserts blank lines between top-level declarations and calls, between a local call group and a following const declaration, before returns, after complete if/else statements, and after Effect logs. Logs remain beneath the operations they describe.
+
+API features live under `apps/api/src/<feature>/api.ts` and `handlers.ts`. `api.ts` composes their contracts; `worker.ts` provides their handlers. `GET /api/healthz` is the reference liveness endpoint. Unmatched requests use Effect’s built-in `HttpApiError.NotFound` (empty HTTP 404); expected feature failures should be declared in endpoint error schemas. The HTTP API modules in the pinned Effect version are marked unstable upstream.

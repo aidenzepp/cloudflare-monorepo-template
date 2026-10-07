@@ -3,6 +3,12 @@ import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
 import * as State from "alchemy/State";
 
+/**
+ * Provisions the built API Worker and frontend assets as one deployment stack.
+ * Local state supports this starter; shared CI state is configured in the tutorial.
+ *
+ * @see https://alchemy.run/cloudflare/tutorial/part-2/
+ */
 export default Alchemy.Stack(
   "cloudflare-monorepo-template",
   { providers: Cloudflare.providers(), state: State.localState() },
