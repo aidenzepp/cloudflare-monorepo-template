@@ -44,6 +44,7 @@ export default defineConfig({
       // Effect adapters return existing promises without introducing async wrappers.
       "typescript/promise-function-async": "off",
       "workspace/no-built-in-try-catch": "error",
+      "workspace/require-bucket-destroy-policy": "error",
     },
   },
 });
