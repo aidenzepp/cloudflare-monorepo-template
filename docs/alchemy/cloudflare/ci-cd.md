@@ -12,11 +12,13 @@ Follow [Alchemy tutorial Part 5](https://alchemy.run/cloudflare/tutorial/part-5/
 
 ## Cloud deployment is deferred
 
-The deploy and cleanup jobs require the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to equal `true`. It is unset initially. This is our explicit opt-in switch, not a variable supplied by Cloudflare. When deployment is authorized, set it in GitHub repository Settings → Secrets and variables → Actions → Variables. Checking in this workflow enables local-code checks, while cloud jobs remain skipped.
+A credential-check job determines whether both `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are available to the workflow. Neither present means cloud jobs skip; both present means cloud jobs may run; only one present fails configuration. The check outputs only a boolean and never prints secrets. This presence check is our template adaptation, not an authentication test. Invalid credentials fail when Alchemy uses them. Local-code checks run independently.
 
-When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. Then enable the repository variable. None of these account or secret operations have been performed.
+Provisioning both secrets enables cloud operations on the next qualifying event, including production deployment on a push to main. No separate deployment-enable variable is required.
 
-Once enabled, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
+When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. None of these account or secret operations have been performed.
+
+When credentials are available, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
 
 The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. Cloud integration tests are not part of this initial workflow; its tests are the account-free HTTP tests. Cloud permissions, previews, comments, and destruction remain unverified until account setup.
 
