@@ -5,13 +5,14 @@ Follow [Alchemy tutorial Part 5](https://alchemy.run/cloudflare/tutorial/part-5/
 ## Repository setup
 
 - `.github/workflows/deploy.yml` runs formatting, lint, types, HTTP tests, and the frontend build on pushes to main and active PRs.
+- `project.config.ts` owns the shared GitHub owner/repository and application stack identity.
 - `stacks/github.ts` declares a scoped Cloudflare token and the two GitHub Actions secrets. It is a separate admin operation, not part of normal app deployment.
 - `alchemy.run.ts` declares the preview comment resource when `PULL_REQUEST` is supplied. Both Cloudflare and GitHub providers are composed with `Layer.mergeAll`.
 - `test/config.ts` remains test-owned. The workflow itself gets its CI context from GitHub Actions, so it does not need to import this file.
 
 ## Cloud deployment is deferred
 
-The deploy and cleanup jobs require the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to equal `true`. It is unset initially. Checking in this workflow enables local-code checks, while cloud jobs remain skipped.
+The deploy and cleanup jobs require the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to equal `true`. It is unset initially. This is our explicit opt-in switch, not a variable supplied by Cloudflare. When deployment is authorized, set it in GitHub repository Settings → Secrets and variables → Actions → Variables. Checking in this workflow enables local-code checks, while cloud jobs remain skipped.
 
 When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. Then enable the repository variable. None of these account or secret operations have been performed.
 

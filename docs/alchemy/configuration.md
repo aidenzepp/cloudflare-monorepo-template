@@ -42,3 +42,13 @@ The explicit primary wins for duplicate paths. Missing paths fall back; source e
 When installing providers through layers, `ConfigProvider.layer` replaces the active provider. `ConfigProvider.layerAdd` composes with it: the existing provider wins by default; `{ asPrimary: true }` gives the added provider priority. Explicit `orElse` is often clearer when choosing precedence.
 
 These APIs were checked against Effect 4.0.1's installed `Config.ts` and `ConfigProvider.ts`. Verify their signatures when upgrading. For Alchemy's Worker-specific configuration binding, consult [Secrets & env](https://alchemy.run/cloudflare/security/secrets-env/); process configuration and Worker runtime configuration have different owners.
+
+## Shared project identity
+
+`project.config.ts` owns the GitHub destination and Alchemy application stack name. Both stacks import it, so credentials and preview comments target the same repository. Its exported readonly object is static checked-in configuration; it requires no environment parser or Vite injection. Changing it updates consumers on their next run, rather than changing deployed infrastructure immediately.
+
+`Project.stackName` identifies Alchemy-managed state. Preserve it for existing deployments unless performing an intentional migration; it is not a display name. The admin stack derives its identity by adding `-github`.
+
+Package metadata remains in `package.json`; the HTTP API contract identifier remains `api`. Neither is an alias for the GitHub repository or stack identity. Keep values together when they share meaning, rather than combining unrelated identifiers merely because their strings currently match.
+
+Use Effect `Config` for environment-backed values that require decoding, validation, or defaults. `import.meta.env` is Vite's environment interface and does not establish shared repository configuration for Alchemy, tests, or other tooling.

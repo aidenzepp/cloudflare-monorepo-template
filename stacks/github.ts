@@ -4,6 +4,7 @@ import * as GitHub from "alchemy/GitHub";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
+import { Project } from "../project.config";
 
 /**
  * Provisions the deployment token and repository secrets using an admin profile.
@@ -15,7 +16,7 @@ import * as Redacted from "effect/Redacted";
  * @see https://alchemy.run/cloudflare/tutorial/part-5/#mint-a-scoped-cloudflare-api-token
  */
 export default Alchemy.Stack(
-  "cloudflare-monorepo-template-github",
+  `${Project.stackName}-github`,
   {
     providers: Layer.mergeAll(Cloudflare.providers(), GitHub.providers()),
     state: Cloudflare.state(),
@@ -39,15 +40,15 @@ export default Alchemy.Stack(
 
     yield* GitHub.Secret("cf-api-token", {
       name: "CLOUDFLARE_API_TOKEN",
-      owner: "aidenzepp",
-      repository: "cloudflare-monorepo-template",
+      owner: Project.github.owner,
+      repository: Project.github.repository,
       value: apiToken.value,
     });
 
     yield* GitHub.Secret("cf-account-id", {
       name: "CLOUDFLARE_ACCOUNT_ID",
-      owner: "aidenzepp",
-      repository: "cloudflare-monorepo-template",
+      owner: Project.github.owner,
+      repository: Project.github.repository,
       value: Redacted.make(accountId),
     });
   }),

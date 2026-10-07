@@ -10,5 +10,5 @@
     "allowImportingTsExtensions": true,
     "types": ["bun", "node", "@cloudflare/workers-types"]
   },
-  "include": ["apps", "test", "stacks", "alchemy.run.ts", "vite.config.ts"]
+  "include": ["apps", "test", "stacks", "alchemy.run.ts", "project.config.ts", "vite.config.ts"]
 }

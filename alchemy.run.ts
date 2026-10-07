@@ -5,6 +5,7 @@ import * as GitHub from "alchemy/GitHub";
 import * as Layer from "effect/Layer";
 import * as Output from "alchemy/Output";
 import ApiWorker from "./apps/api/src/worker";
+import { Project } from "./project.config";
 
 /**
  * Provisions the Effect-native Worker defined by the API application.
@@ -15,7 +16,7 @@ import ApiWorker from "./apps/api/src/worker";
  * @see https://alchemy.run/cloudflare/apis/effect-http-api/#4-add-to-the-stack
  */
 export default Alchemy.Stack(
-  "cloudflare-monorepo-template",
+  Project.stackName,
   {
     providers: Layer.mergeAll(Cloudflare.providers(), GitHub.providers()),
     state: Cloudflare.state(),
@@ -31,8 +32,8 @@ export default Alchemy.Stack(
       yield* GitHub.Comment("preview-comment", {
         body: Output.interpolate`Preview: ${worker.url}`,
         issueNumber: Number(pullRequest),
-        owner: "aidenzepp",
-        repository: "cloudflare-monorepo-template",
+        owner: Project.github.owner,
+        repository: Project.github.repository,
       });
     }
 
