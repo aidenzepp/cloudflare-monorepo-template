@@ -19,12 +19,14 @@ const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
 const stack = beforeAll(deploy(Stack));
 
 afterAll(destroy(Stack));
+
 test(
   "deployed health endpoint",
   Effect.gen(function* verifyHealth() {
     const outputs = yield* stack;
     const response = yield* Effect.tryPromise(() => fetch(`${outputs.url}/api/health`));
     expect(response.status).toBe(200);
+
     const body = yield* Effect.tryPromise(() => response.json());
     expect(body).toEqual({ ok: true, runtime: "cloudflare" });
   }),

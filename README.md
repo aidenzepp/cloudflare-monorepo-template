@@ -26,4 +26,4 @@ This creates billable cloud resources. Local Alchemy state is ignored by Git; du
 
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
 
-Statement spacing inserts blank lines between top-level declarations, before returns, after complete if/else statements, and after Effect logs. Logs remain beneath the operations they describe.
+Statement spacing inserts blank lines between top-level declarations and calls, between a local call group and a following const declaration, before returns, after complete if/else statements, and after Effect logs. Logs remain beneath the operations they describe.

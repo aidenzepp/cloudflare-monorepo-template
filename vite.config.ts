@@ -4,11 +4,11 @@ import core from "ultracite/oxlint/core";
 import antiSlop from "ultracite/oxlint/anti-slop";
 
 /**
- * Matches declarations owned by the module without spacing local variables.
+ * Matches module declarations and calls without spacing local call groups.
  */
-const topLevelDeclaration = {
+const topLevelUnit = {
   selector:
-    "Program > :matches(ExportNamedDeclaration, ExportDefaultDeclaration, FunctionDeclaration, ClassDeclaration, TSTypeAliasDeclaration, TSInterfaceDeclaration, TSEnumDeclaration, TSModuleDeclaration, VariableDeclaration)",
+    'Program > :matches(ExportNamedDeclaration, ExportDefaultDeclaration, FunctionDeclaration, ClassDeclaration, TSTypeAliasDeclaration, TSInterfaceDeclaration, TSEnumDeclaration, TSModuleDeclaration, VariableDeclaration, ExpressionStatement[expression.type="CallExpression"])',
 };
 
 /**
@@ -31,8 +31,13 @@ export default defineConfig({
     rules: {
       "@stylistic/padding-line-between-statements": [
         "error",
-        { blankLine: "always", next: topLevelDeclaration, prev: "*" },
-        { blankLine: "always", next: "*", prev: topLevelDeclaration },
+        { blankLine: "always", next: topLevelUnit, prev: "*" },
+        { blankLine: "always", next: "*", prev: topLevelUnit },
+        {
+          blankLine: "always",
+          next: "const",
+          prev: { selector: 'ExpressionStatement[expression.type="CallExpression"]' },
+        },
         { blankLine: "always", next: "return", prev: "*" },
         { blankLine: "always", next: "*", prev: "if" },
         { blankLine: "always", next: "*", prev: effectLogStatement },
