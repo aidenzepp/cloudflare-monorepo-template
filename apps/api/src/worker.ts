@@ -11,7 +11,8 @@ import { makeHealthzHandlers } from "./healthz/handlers";
 
 /**
  * Supplies the JSON-only platform stub used by Alchemy's HTTP API guide.
- * Workers serve assets through Cloudflare and cannot perform filesystem responses.
+ * This JSON API does not use Effect filesystem response helpers; Cloudflare assets
+ * remain available through the Worker assets binding.
  * Effect 4.0.1 also requires platform and compression fields; these match the
  * stub in Alchemy 2.0.0-beta.81's Cloudflare/StateStore/Api.ts.
  *
@@ -33,6 +34,11 @@ export const HttpPlatformStub = Layer.succeed(HttpPlatform.HttpPlatform, {
  * building the HTTP effect, matching its installed StateStore implementation. Request
  * work remains inside endpoint handlers. Alchemy owns the Cloudflare fetch adapter.
  *
+ * Cloudflare.Telemetry forwards Effect spans into native Workers traces. Alchemy
+ * enables Worker logs by default; the telemetry layer enables traces and requires
+ * a compatibility date at or after 2026-07-28.
+ *
+ * @see https://alchemy.run/cloudflare/observability/workers-tracing/
  * @see https://alchemy.run/cloudflare/apis/effect-http-api/#3-build-the-worker
  */
 export default Cloudflare.Worker(
@@ -53,5 +59,5 @@ export default Cloudflare.Worker(
         ),
       ),
     };
-  }),
+  }).pipe(Effect.provide(Cloudflare.Telemetry())),
 );
