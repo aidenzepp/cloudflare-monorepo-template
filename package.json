@@ -17,7 +17,8 @@
     "test:integration": "bun test test/integration.test.ts",
     "infra:plan": "bun run build && alchemy plan --stage dev",
     "infra:deploy": "bun run build && alchemy deploy --stage dev",
-    "dev:web": "vp dev"
+    "dev:web": "vp dev",
+    "api:export": "bun apps/api/scripts/export-openapi.ts"
   },
   "dependencies": {
     "alchemy": "2.0.0-beta.81",

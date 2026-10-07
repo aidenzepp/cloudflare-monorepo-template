@@ -2,12 +2,10 @@ import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
-import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as Etag from "effect/http/Etag";
 import * as HttpPlatform from "effect/http/HttpPlatform";
 import * as HttpRouter from "effect/http/HttpRouter";
-import { Api } from "./api";
-import { makeHealthzHandlers } from "./healthz/handlers";
+import { makeHttpLayer } from "./http";
 
 /**
  * Supplies the JSON-only platform stub used by Alchemy's HTTP API guide.
@@ -48,16 +46,9 @@ export default Cloudflare.Worker(
     compatibility: { date: "2026-10-06" },
     main: import.meta.url,
   },
-  Effect.sync(() => {
-    const healthzHandlers = makeHealthzHandlers();
-
-    return {
-      fetch: HttpRouter.toHttpEffect(
-        HttpApiBuilder.layer(Api).pipe(
-          Layer.provide(healthzHandlers),
-          Layer.provide([Etag.layer, HttpPlatformStub, Path.layer]),
-        ),
-      ),
-    };
-  }).pipe(Effect.provide(Cloudflare.Telemetry())),
+  Effect.sync(() => ({
+    fetch: HttpRouter.toHttpEffect(
+      makeHttpLayer().pipe(Layer.provide([Etag.layer, HttpPlatformStub, Path.layer])),
+    ),
+  })).pipe(Effect.provide(Cloudflare.Telemetry())),
 );
