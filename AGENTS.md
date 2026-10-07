@@ -7,3 +7,5 @@ Use Effect error channels; built-in try/catch is prohibited by lint. Do not add 
 Run `bun run check`, `bun test apps`, and `bun run build` before completing implementation. Cloud integration tests deploy real resources: build first, select an isolated stage with `ALCHEMY_STAGE`, and invoke `bun run test:integration` explicitly. Never use production for tests.
 
 Follow Alchemy’s documented Effect-native Worker construction and HTTP API patterns. Link the owning guide in code. Do not introduce a standalone fetch adapter or no-op filesystem into production; document any version-required deviations.
+
+Before implementing Alchemy/Cloudflare features, read `docs/alchemy/cloudflare/README.md` and its relevant upstream guide.

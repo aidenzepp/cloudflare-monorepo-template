@@ -2,6 +2,8 @@
 
 Minimal Bun workspace with Alchemy, Cloudflare Workers, Effect v4, and Vite Plus.
 
+See [the documentation index](docs/README.md) for Alchemy/Cloudflare references and implementation guidance.
+
 ```sh
 bun install --frozen-lockfile
 bun run build
