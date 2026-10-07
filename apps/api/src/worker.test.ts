@@ -38,7 +38,7 @@ test("OpenAPI route exposes the assembled API contract", async () => {
 });
 
 test("Scalar documentation embeds the API and bundled interaction script", async () => {
-  const response = await runtime.handler(new Request("https://template.test/api/docs"));
+  const response = await runtime.handler(new Request("https://template.test/api/openapi"));
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/html");
 
