@@ -30,7 +30,7 @@ export default Alchemy.Stack(
 
     if (pullRequest !== undefined && pullRequest !== "") {
       yield* GitHub.Comment("preview-comment", {
-        body: Output.interpolate`Preview: ${worker.url}`,
+        body: Output.interpolate`**Preview:** ${worker.url}`,
         issueNumber: Number(pullRequest),
         owner: Project.github.owner,
         repository: Project.github.repository,
