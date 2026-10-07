@@ -12,6 +12,6 @@ Before implementing Alchemy/Cloudflare features, read `docs/alchemy/cloudflare/R
 
 ## Learning more about Effect
 
-Use `.agents/skills/effect-ts/SKILL.md` for Effect repository guidance. Before writing Effect code, read `node_modules/effect/AGENTS.md` completely and follow its relevant links. For APIs not covered there, consult `node_modules/effect/src` matching the installed version.
+Before writing Effect code, read `node_modules/effect/AGENTS.md` completely and follow its relevant links. For APIs not covered there, consult `node_modules/effect/src` matching the installed version.
 
 Preserve the pinned dependency versions and this repository's Alchemy/Bun testing conventions when applying upstream guidance.
