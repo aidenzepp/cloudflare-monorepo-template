@@ -12,10 +12,12 @@ const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
   providers: Cloudflare.providers(),
   state: State.localState(),
 });
+
 /**
  * Provides the isolated stack outputs after deployment.
  */
 const stack = beforeAll(deploy(Stack));
+
 afterAll(destroy(Stack));
 test(
   "deployed health endpoint",

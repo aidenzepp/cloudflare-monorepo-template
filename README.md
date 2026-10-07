@@ -25,3 +25,5 @@ ALCHEMY_STAGE=test-unique-name bun run test:integration
 This creates billable cloud resources. Local Alchemy state is ignored by Git; durable shared CI state, preview automation, and observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
 
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
+
+Statement spacing inserts blank lines between top-level declarations, before returns, after complete if/else statements, and after Effect logs. Logs remain beneath the operations they describe.

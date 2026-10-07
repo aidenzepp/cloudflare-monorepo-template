@@ -11,6 +11,7 @@ export const handleRequest = (request: Request) =>
     if (new URL(request.url).pathname === "/api/health" && request.method === "GET") {
       return Response.json({ ok: true, runtime: "cloudflare" });
     }
+
     return Response.json({ error: "not_found" }, { status: 404 });
   });
 

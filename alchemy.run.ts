@@ -13,6 +13,7 @@ export default Alchemy.Stack(
       compatibility: { date: "2026-10-06" },
       main: "./dist/template_local/index.js",
     });
+
     return { url: worker.url };
   }),
 );
