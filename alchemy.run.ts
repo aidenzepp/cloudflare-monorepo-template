@@ -2,23 +2,20 @@ import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
 import * as State from "alchemy/State";
+import ApiWorker from "./apps/api/src/worker";
 
 /**
- * Provisions the built API Worker and frontend assets as one deployment stack.
- * Local state supports this starter; shared CI state is configured in the tutorial.
+ * Provisions the Effect-native Worker defined by the API application.
+ * The stack yields its resource directly, following Alchemy's HTTP API guide.
+ * Local state supports this starter until shared CI state is configured.
  *
- * @see https://alchemy.run/cloudflare/tutorial/part-2/
+ * @see https://alchemy.run/cloudflare/apis/effect-http-api/#4-add-to-the-stack
  */
 export default Alchemy.Stack(
   "cloudflare-monorepo-template",
   { providers: Cloudflare.providers(), state: State.localState() },
   Effect.gen(function* provisionTemplate() {
-    const worker = yield* Cloudflare.Worker("Api", {
-      assets: { directory: "./dist/client", runWorkerFirst: ["/api/*"] },
-      bundle: false,
-      compatibility: { date: "2026-10-06" },
-      main: "./dist/template_local/index.js",
-    });
+    const worker = yield* ApiWorker;
 
     return { url: worker.url };
   }),

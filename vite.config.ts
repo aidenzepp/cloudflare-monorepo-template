@@ -1,5 +1,4 @@
 import { defineConfig } from "vite-plus";
-import { cloudflare } from "@cloudflare/vite-plugin";
 import core from "ultracite/oxlint/core";
 import antiSlop from "ultracite/oxlint/anti-slop";
 
@@ -47,5 +46,4 @@ export default defineConfig({
       "workspace/no-built-in-try-catch": "error",
     },
   },
-  plugins: [cloudflare()],
 });

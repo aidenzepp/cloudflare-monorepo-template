@@ -6,7 +6,7 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
+    "dev": "alchemy dev",
     "build": "vp build",
     "lint": "vp lint --type-aware",
     "format": "vp fmt --check",
@@ -16,15 +16,16 @@
     "test": "bun test apps",
     "test:integration": "bun test test/integration.test.ts",
     "infra:plan": "bun run build && alchemy plan --stage dev",
-    "infra:deploy": "bun run build && alchemy deploy --stage dev"
+    "infra:deploy": "bun run build && alchemy deploy --stage dev",
+    "dev:web": "vp dev"
   },
   "dependencies": {
     "alchemy": "2.0.0-beta.81",
     "effect": "4.0.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.62.5",
     "@cloudflare/workers-types": "5.20261005.1",
+    "@effect/platform-bun": "4.0.1",
     "@effect/platform-node": "4.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/bun": "1.4.2",
