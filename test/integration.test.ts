@@ -2,7 +2,16 @@ import * as Cloudflare from "alchemy/Cloudflare";
 import * as Test from "alchemy/Test/Bun";
 import { expect } from "bun:test";
 import * as Effect from "effect/Effect";
+import * as ConfigProvider from "effect/ConfigProvider";
 import Stack from "../alchemy.run.ts";
+import { Ci } from "./config";
+
+/**
+ * Validates the test process cleanup flag before registering deployment hooks.
+ * Effect's default config provider is empty; explicitly read environment values
+ * here, outside the Alchemy test harness and Worker construction.
+ */
+const isCi = Effect.runSync(Ci.parse(ConfigProvider.fromEnv()));
 
 /**
  * Owns the Effect-aware Bun hooks for real Cloudflare integration tests.
@@ -27,7 +36,7 @@ const stack = beforeAll(deploy(Stack));
 
 // Retain local test resources for reuse; CI tears down its isolated stage.
 // https://alchemy.run/cloudflare/tutorial/part-3/#destroy-after-tests-on-ci
-afterAll.skipIf((process.env.CI ?? "") === "")(destroy(Stack));
+afterAll.skipIf(!isCi)(destroy(Stack));
 
 /**
  * Verifies the deployed liveness contract over HTTP using the stack's actual URL.
