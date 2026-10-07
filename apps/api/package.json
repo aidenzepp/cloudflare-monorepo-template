@@ -1,0 +1,5 @@
+{
+  "name": "@template/api",
+  "private": true,
+  "type": "module"
+}

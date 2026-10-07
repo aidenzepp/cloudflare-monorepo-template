@@ -1,0 +1,41 @@
+{
+  "name": "cloudflare-monorepo-template",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "lint": "vp lint --type-aware",
+    "format": "vp fmt --check",
+    "fix": "vp fmt && vp lint --fix",
+    "typecheck": "tsc --noEmit",
+    "check": "bun run format && bun run lint && bun run typecheck",
+    "test": "bun test apps",
+    "test:integration": "bun test test/integration.test.ts",
+    "infra:plan": "bun run build && alchemy plan --stage dev",
+    "infra:deploy": "bun run build && alchemy deploy --stage dev"
+  },
+  "dependencies": {
+    "alchemy": "2.0.0-beta.81",
+    "effect": "4.0.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.62.5",
+    "@cloudflare/workers-types": "5.20261005.1",
+    "@effect/platform-node": "4.0.1",
+    "@types/bun": "1.4.2",
+    "@types/node": "26.6.4",
+    "typescript": "7.0.2",
+    "ultracite": "7.12.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0",
+    "vite-plus": "1.0.0",
+    "wrangler": "4.147.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
+  },
+  "packageManager": "bun@1.4.2"
+}
