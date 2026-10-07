@@ -23,6 +23,8 @@ Our API uses [Alchemy's Effect HTTP API guide](https://alchemy.run/cloudflare/ap
 | CI/CD                                           | [Part 5](https://alchemy.run/cloudflare/tutorial/part-5/) |
 | Observability                                   | [Part 6](https://alchemy.run/cloudflare/tutorial/part-6/) |
 
+See [our CI/CD setup](ci-cd.md) and [Effect configuration composition](../configuration.md) for repository-specific guidance.
+
 ## Applying the guides here
 
 Check examples against the versions pinned in `package.json` and `bun.lock`. When an example differs from installed types, inspect the installed Alchemy and Effect source before inventing an adapter or bypassing types. Document the reason and source for any required adjustment.
