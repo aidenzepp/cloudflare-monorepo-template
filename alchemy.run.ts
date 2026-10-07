@@ -1,6 +1,9 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
+import * as GitHub from "alchemy/GitHub";
+import * as Layer from "effect/Layer";
+import * as Output from "alchemy/Output";
 import ApiWorker from "./apps/api/src/worker";
 
 /**
@@ -13,9 +16,25 @@ import ApiWorker from "./apps/api/src/worker";
  */
 export default Alchemy.Stack(
   "cloudflare-monorepo-template",
-  { providers: Cloudflare.providers(), state: Cloudflare.state() },
+  {
+    providers: Layer.mergeAll(Cloudflare.providers(), GitHub.providers()),
+    state: Cloudflare.state(),
+  },
   Effect.gen(function* provisionTemplate() {
     const worker = yield* ApiWorker;
+
+    // Part 5 manages a stable preview-comment resource alongside the Worker.
+    // https://alchemy.run/cloudflare/tutorial/part-5/#add-pr-preview-comments
+    const pullRequest = process.env.PULL_REQUEST;
+
+    if (pullRequest !== undefined && pullRequest !== "") {
+      yield* GitHub.Comment("preview-comment", {
+        body: Output.interpolate`Preview: ${worker.url}`,
+        issueNumber: Number(pullRequest),
+        owner: "aidenzepp",
+        repository: "cloudflare-monorepo-template",
+      });
+    }
 
     return { url: worker.url };
   }),

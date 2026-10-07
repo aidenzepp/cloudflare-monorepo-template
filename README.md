@@ -33,7 +33,7 @@ bunx alchemy destroy --stage test-local
 
 Following [tutorial part 1](https://alchemy.run/cloudflare/tutorial/part-1/), the stack and test harness both use `Cloudflare.state()`. The first plan, deploy, or dev command requests permission to bootstrap the Cloudflare state-store Worker and its supporting resources. Authenticate using `bunx alchemy profile`; confirm the intended Cloudflare account during setup. Deployment and account verification have not yet been completed. The tutorial's sample R2 bucket is omitted until an application feature needs storage.
 
-Preview automation and observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
+CI checks and gated deployment/preview jobs follow [Part 5](docs/alchemy/cloudflare/ci-cd.md). Cloud jobs remain disabled until explicitly enabled after account setup. Observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
 
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
 
