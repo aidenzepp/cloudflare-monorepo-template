@@ -9,6 +9,8 @@ Use this skill when preparing commits.
 
 The goal is a commit history that reads like a small design document. Each commit should be targeted, reviewable, and meaningful on its own. A commit does not need to be large; it needs to represent one coherent reason for change.
 
+Before preparing commits, read [references/examples.md](references/examples.md). Its labeled POSITIVE and NEGATIVE pairs define acceptance boundaries for prefixes, subjects, commit scope, staging, and useful bodies.
+
 ## Commit Prefixes
 
 Use these prefixes as the default vocabulary:
@@ -49,7 +51,9 @@ Then split by story boundary:
 - keep mechanical formatting separate only when it would obscure the semantic diff
 - exclude demos, scratch files, generated churn, and local experiments unless the user explicitly wants them kept
 
-A clean DAG is not the same as many tiny commits. Do not split a change into commits that only make sense after reading future commits unless you are intentionally telling a migration story.
+Each commit should represent one coherent change and leave the repository working. Keep everything required for that change together. Separate unrelated changes so each can be reverted independently. Dependencies between commits are acceptable; make them clear rather than splitting tightly coupled work into broken intermediate states.
+
+Atomic means one complete change, not necessarily a small number of files.
 
 ## Stage Carefully
 
