@@ -15,3 +15,7 @@ Before implementing Alchemy/Cloudflare features, read `docs/alchemy/cloudflare/R
 Before writing Effect code, read `node_modules/effect/AGENTS.md` completely and follow its relevant links. For APIs not covered there, consult `node_modules/effect/src` matching the installed version.
 
 Preserve the pinned dependency versions and this repository's Alchemy/Bun testing conventions when applying upstream guidance.
+
+Use `.agents/skills/effect-design/SKILL.md` when writing or reviewing Effect code and derived API/configuration composition. Read its labeled examples before applying its guidance.
+
+Use `.agents/skills/error-messages/SKILL.md` when adding or changing caller-facing errors. For Effect HTTP APIs, use schema-backed tagged errors declared in endpoint contracts; the skill’s generic payload examples do not require a separate error envelope.
