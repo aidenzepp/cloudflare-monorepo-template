@@ -8,8 +8,8 @@ import { Ci } from "@test/config";
 
 /**
  * Validates the test process cleanup flag before registering deployment hooks.
- * Effect's default config provider is empty; explicitly read environment values
- * here, outside the Alchemy test harness and Worker construction.
+ * Explicitly selects the process environment outside the Alchemy test harness
+ * and Worker construction, so runtime provider overrides cannot change its source.
  */
 const isCi = Effect.runSync(Ci.parse(ConfigProvider.fromEnv()));
 

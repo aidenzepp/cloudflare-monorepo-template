@@ -51,7 +51,11 @@ These APIs were checked against Effect 4.0.1's installed `Config.ts` and `Config
 
 Package metadata remains in `package.json`; the HTTP API contract identifier remains `api`. Neither is an alias for the GitHub repository or stack identity. Keep values together when they share meaning, rather than combining unrelated identifiers merely because their strings currently match.
 
-Use Effect `Config` for environment-backed values that require decoding, validation, or defaults. `import.meta.env` is Vite's environment interface and does not establish shared repository configuration for Alchemy, tests, or other tooling.
+Effect `Config` is the standard for interpreting environment-backed application, stack, test, and tooling settings. Define constraints with `Config.schema`, optional values with `Config.option` or a schema that explicitly represents absence, and missing-value defaults with `Config.withDefault`. Parse at the owning runtime boundary; test definitions with `ConfigProvider.fromUnknown` without changing the host environment.
+
+Process settings explicitly select `ConfigProvider.fromEnv()`, so an enclosing runtime's provider does not change their source. `infra/config/stages.ts` owns GitHub event and PR configuration for the CI stage selector and stack preview comments. Only push events select production. PR deployment requires a positive safe integer; preview comments permit missing or empty `PULL_REQUEST` because pushes supply no PR target. Invalid supplied numbers fail before stack resources are provisioned.
+
+Keep static project identity as checked-in data. Positional CLI arguments belong to argument parsing, and subprocess environment forwarding can retain `process.env` because it passes values through without interpreting them. `import.meta.env` is Vite's build-time client interface; Effect Config does not make arbitrary process settings available to browser code. Worker bindings follow Alchemy's runtime provider integration rather than reading deployment-process settings.
 
 ## Source imports
 
