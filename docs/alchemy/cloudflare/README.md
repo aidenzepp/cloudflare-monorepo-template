@@ -23,7 +23,7 @@ Our API uses [Alchemy's Effect HTTP API guide](https://alchemy.run/cloudflare/ap
 | CI/CD                                           | [Part 5](https://alchemy.run/cloudflare/tutorial/part-5/) |
 | Observability                                   | [Part 6](https://alchemy.run/cloudflare/tutorial/part-6/) |
 
-See [our API documentation setup](api-documentation.md), [request validation responses](validation.md), [our native observability setup](observability.md), [our CI/CD setup](ci-cd.md) and [Effect configuration composition](../configuration.md) for repository-specific guidance.
+See [our test isolation and cleanup](testing.md), [our API documentation setup](api-documentation.md), [request validation responses](validation.md), [our native observability setup](observability.md), [our CI/CD setup](ci-cd.md) and [Effect configuration composition](../configuration.md) for repository-specific guidance.
 
 ## Applying the guides here
 

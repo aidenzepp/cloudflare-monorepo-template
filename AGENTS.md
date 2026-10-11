@@ -4,7 +4,7 @@ Use `.agents/skills/conventional-commits/SKILL.md` when committing and `.agents/
 
 Use Effect error channels; built-in try/catch is prohibited by lint. Do not add function-decomposition, type-design, require-doc-comment, or Shadcn lint policies.
 
-Run `bun run check`, `bun run build`, then `bun test apps infra` before completing implementation. Local Worker tests use Alchemy’s Effect-aware harness, workerd, isolated local state, and automatic cleanup; build assets before running them. Cloud integration tests deploy real resources: build first, select an isolated stage with `ALCHEMY_STAGE`, and invoke `bun run test:integration` explicitly. Never use production for tests.
+Run `bun run check`, `bun run build`, then `bun test apps infra` before completing implementation. Local Worker tests use Alchemy’s Effect-aware harness, workerd, isolated local state, and automatic cleanup; build assets before running them. Cloud integration tests deploy real resources: build first, select an explicit isolated `test-…` stage with `ALCHEMY_TEST_STAGE`, and invoke `bun run test:integration` explicitly. Never use production for tests. Cloud tests use `infra/stacks/integration.ts` and always destroy their test stack locally and in CI; see `docs/alchemy/cloudflare/testing.md`.
 
 Follow Alchemy’s documented Effect-native Worker construction and HTTP API patterns. Link the owning guide in code. Do not introduce a standalone fetch adapter or no-op filesystem into production; document any version-required deviations.
 

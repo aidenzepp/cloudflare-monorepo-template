@@ -30,4 +30,4 @@ The workflow pins Bun to our package-manager version, installs the frozen lockfi
 
 GitHub's workflow `env` values configure processes running in its jobs. More specific job or step values override the same variable from a wider workflow scope. They do not become Worker bindings automatically.
 
-Effect configuration definitions and provider precedence are described in [configuration composition](../configuration.md). Keep test cleanup configuration separate from deployment stage selection: `CI=true` does not mean `prod`.
+Effect configuration definitions and provider precedence are described in [configuration composition](../configuration.md). Cloud integration tests require their own validated `ALCHEMY_TEST_STAGE` and always clean up locally and in CI. This is separate from application deployment stage selection; see [test isolation and cleanup](testing.md).
