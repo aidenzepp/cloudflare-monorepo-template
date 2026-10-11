@@ -1,10 +1,12 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as GitHub from "alchemy/GitHub";
 import * as Layer from "effect/Layer";
 import * as Output from "alchemy/Output";
 import ApiWorker from "@api/app/worker";
+import { PreviewPullRequest } from "@infra/config/stages";
 import { Project } from "@infra/config/project";
 
 /**
@@ -22,16 +24,15 @@ export default Alchemy.Stack(
     state: Cloudflare.state(),
   },
   Effect.gen(function* provisionTemplate() {
+    const pullRequest = yield* PreviewPullRequest.parse(ConfigProvider.fromEnv());
     const worker = yield* ApiWorker;
 
     // Part 5 manages a stable preview-comment resource alongside the Worker.
     // https://alchemy.run/cloudflare/tutorial/part-5/#add-pr-preview-comments
-    const pullRequest = process.env.PULL_REQUEST;
-
-    if (pullRequest !== undefined && pullRequest !== "") {
+    if (pullRequest !== undefined) {
       yield* GitHub.Comment("preview-comment", {
         body: Output.interpolate`**Preview:** ${worker.url}`,
-        issueNumber: Number(pullRequest),
+        issueNumber: pullRequest,
         owner: Project.github.owner,
         repository: Project.github.repository,
       });

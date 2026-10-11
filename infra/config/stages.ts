@@ -1,3 +1,5 @@
+import * as Config from "effect/Config";
+import type * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Regex from "effect/RegExp";
 import * as Schema from "effect/Schema";
@@ -20,16 +22,38 @@ export const PreviewStage = Schema.String.check(
 const PullRequestNumber = Schema.Int.check(Schema.isGreaterThan(0));
 
 /**
+ * Decodes GitHub's environment representation as a positive safe PR number.
+ */
+const PullRequestFromString = Schema.NumberFromString.check(
+  Schema.isInt(),
+  Schema.isGreaterThan(0),
+);
+
+/**
+ * Reads the optional preview-comment target. GitHub supplies an empty string on
+ * pushes; missing and empty values both omit the comment, while invalid numbers fail.
+ */
+export const PreviewPullRequest = Config.schema(
+  Schema.Union([Schema.Literal(""), PullRequestFromString]),
+  "PULL_REQUEST",
+).pipe(
+  Config.withDefault(""),
+  Config.map((value) => (value === "" ? undefined : value)),
+);
+
+/**
  * Validates the GitHub event context used to select a deployment stage.
  * A pull-request event requires a PR number; only push events select production.
  */
-const DeploymentEvent = Schema.Union([
-  Schema.Struct({ eventName: Schema.Literal("push") }),
-  Schema.Struct({
-    eventName: Schema.Literal("pull_request"),
-    pullRequest: Schema.NumberFromString.check(Schema.isInt(), Schema.isGreaterThan(0)),
-  }),
-]);
+const DeploymentEvent = Config.schema(
+  Schema.Union([
+    Schema.Struct({ GITHUB_EVENT_NAME: Schema.Literal("push") }),
+    Schema.Struct({
+      GITHUB_EVENT_NAME: Schema.Literal("pull_request"),
+      PULL_REQUEST: PullRequestFromString,
+    }),
+  ]),
+);
 
 /**
  * Creates a preview name accepted by the shared cleanup schema.
@@ -48,17 +72,15 @@ export const makePreviewStage = Effect.fnUntraced(function* makePreviewStage(pul
 /**
  * Selects production for push events and a validated preview for PR events.
  *
- * @param eventName - GitHub's event name; unsupported or absent events fail validation.
- * @param pullRequest - GitHub's PR number text, required for pull-request events.
+ * @param provider - Supplies process configuration or isolated values in tests.
  * @returns The configured production stage or validated preview stage.
  */
 export const deploymentStage = Effect.fnUntraced(function* deploymentStage(
-  eventName: string | undefined,
-  pullRequest?: string,
+  provider: ConfigProvider.ConfigProvider,
 ) {
-  const event = yield* Schema.decodeUnknownEffect(DeploymentEvent)({ eventName, pullRequest });
+  const event = yield* DeploymentEvent.parse(provider);
 
-  return event.eventName === "push"
+  return event.GITHUB_EVENT_NAME === "push"
     ? Project.stages.production
-    : yield* makePreviewStage(event.pullRequest);
+    : yield* makePreviewStage(event.PULL_REQUEST);
 });

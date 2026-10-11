@@ -1,3 +1,4 @@
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { deploymentStage, PreviewStage } from "@infra/config/stages";
@@ -13,7 +14,7 @@ const program = Effect.gen(function* emitDeploymentStage() {
   const mode = yield* Schema.decodeUnknownEffect(Schema.Literals(["deploy", "cleanup"]))(
     process.argv[2],
   );
-  const stage = yield* deploymentStage(process.env.GITHUB_EVENT_NAME, process.env.PULL_REQUEST);
+  const stage = yield* deploymentStage(ConfigProvider.fromEnv());
 
   if (mode === "cleanup") {
     yield* Schema.decodeUnknownEffect(PreviewStage)(stage);

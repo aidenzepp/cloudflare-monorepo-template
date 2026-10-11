@@ -1,10 +1,16 @@
 import { expect } from "bun:test";
 import * as Test from "alchemy/Test/Bun";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import { Project } from "@infra/config/project";
-import { deploymentStage, makePreviewStage, PreviewStage } from "@infra/config/stages";
+import {
+  deploymentStage,
+  makePreviewStage,
+  PreviewPullRequest,
+  PreviewStage,
+} from "@infra/config/stages";
 
 /**
  * Runs stage-boundary checks without credentials or cloud resources.
@@ -29,8 +35,14 @@ const runStage = (mode: string, eventName: string | undefined, pullRequest: stri
 test(
   "stage selection distinguishes production pushes from PR previews",
   Effect.gen(function* verifySelection() {
-    expect(yield* deploymentStage("push")).toBe(Project.stages.production);
-    expect(yield* deploymentStage("pull_request", "42")).toBe("pr-42");
+    expect(yield* deploymentStage(ConfigProvider.fromUnknown({ GITHUB_EVENT_NAME: "push" }))).toBe(
+      Project.stages.production,
+    );
+    expect(
+      yield* deploymentStage(
+        ConfigProvider.fromUnknown({ GITHUB_EVENT_NAME: "pull_request", PULL_REQUEST: "42" }),
+      ),
+    ).toBe("pr-42");
     expect(yield* makePreviewStage(42)).toBe("pr-42");
 
     for (const [event, number] of [
@@ -44,8 +56,10 @@ test(
       ["workflow_dispatch", undefined],
       [undefined, "42"],
     ] as const) {
-      const error = yield* deploymentStage(event, number).pipe(Effect.flip);
-      expect(error._tag).toBe("SchemaError");
+      const error = yield* deploymentStage(
+        ConfigProvider.fromUnknown({ GITHUB_EVENT_NAME: event, PULL_REQUEST: number }),
+      ).pipe(Effect.flip);
+      expect(error._tag).toBe("ConfigError");
     }
   }),
 );
@@ -109,6 +123,26 @@ test(
       const result = runStage(mode, event, number);
       expect(result.exitCode).not.toBe(0);
       expect(result.stdout.toString()).toBe("");
+    }
+  }),
+);
+
+test(
+  "preview comments accept absent context but reject invalid supplied PR numbers",
+  Effect.gen(function* verifyPreviewCommentConfig() {
+    for (const value of [undefined, ""] as const) {
+      expect(
+        yield* PreviewPullRequest.parse(ConfigProvider.fromUnknown({ PULL_REQUEST: value })),
+      ).toBeUndefined();
+    }
+    expect(
+      yield* PreviewPullRequest.parse(ConfigProvider.fromUnknown({ PULL_REQUEST: "42" })),
+    ).toBe(42);
+    for (const value of ["0", "-1", "1.5", "9007199254740992", "abc", " "]) {
+      const error = yield* PreviewPullRequest.parse(
+        ConfigProvider.fromUnknown({ PULL_REQUEST: value }),
+      ).pipe(Effect.flip);
+      expect(error._tag).toBe("ConfigError");
     }
   }),
 );
