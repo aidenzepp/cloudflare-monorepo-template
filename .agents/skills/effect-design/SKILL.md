@@ -1,6 +1,6 @@
 ---
 name: effect-design
-description: Write or review Effect code in this repository, especially boundary schemas, typed HTTP errors, readable composition, and configuration or routes derived from shared parents.
+description: Write or review Effect code in this repository, especially native Alchemy/Cloudflare integrations, streaming, service dependencies, resource lifecycles, boundary schemas, typed HTTP errors, and readable composition.
 ---
 
 # Effect Design
@@ -11,15 +11,44 @@ Before implementation or review, read [references/examples.md](references/exampl
 
 ## Native capability review
 
-Before writing a custom parser, adapter, client wrapper, or resource-management mechanism:
+Apply this review before implementing a nontrivial operation, not only after deciding to build a custom parser, adapter, stream consumer, dependency container, client wrapper, retry loop, or resource-management mechanism:
 
 1. State the contract: accepted input, output, failures, limits, lifecycle, and guarantees.
 2. Inspect the owning repository patterns and pinned dependency versions.
-3. Check Alchemy's documented integration, then installed Effect core APIs and relevant companion packages, then the underlying platform API. These are discovery steps, not a requirement to force every operation through Alchemy.
+3. Check Alchemy's documented resource and runtime integration, installed Effect core APIs and relevant companion packages, and the underlying Cloudflare/platform API. Use Alchemy's supported resource, binding, and provider integration wherever it satisfies the requirement; use Effect for application composition and lifecycle. These are discovery steps, not a requirement to force every operation through Alchemy.
 4. Read the relevant API documentation and source for the installed version. Search neighboring APIs too; failing to find one guessed symbol does not establish that the capability is absent.
-5. Select the supported primitive that satisfies the contract with the clearest implementation. If custom glue remains necessary, identify the specific missing capability and document the constraint at its owning boundary.
+5. Select the supported primitive or integration that satisfies the contract with the clearest implementation. Check runtime compatibility, streaming behavior, cancellation, typed failures, and lifecycle guarantees before adapting it. If custom glue remains necessary, identify the specific missing capability and document the constraint at its owning boundary.
+6. Review the final implementation for recreated framework behavior. In the handoff, name the selected native capabilities and their role; for custom glue, name the documentation/source checked, the verified gap, and why the adaptation is necessary. Keep this explanation proportional to the change.
 
 Do not claim that a native capability is unavailable without checking. Do not upgrade dependencies or add a package merely to make an example convenient. Explain material findings in the work update; this review does not require a new report file.
+
+## Capabilities to inspect
+
+- Infrastructure and bindings: Alchemy's supported resources, Outputs, providers,
+  runtime clients, and test harness before direct control-plane API calls or custom
+  binding injection. Infrastructure providers and request-time binding layers have
+  different roles; preserve the construction/request boundary.
+- Streaming: `Stream`, `Sink`, `Channel`, HTTP body helpers, and `Multipart` before
+  custom read loops, mutable collection, or whole-body buffering. Prefer a supported
+  collector when bounded collection is intended; stream operators alone do not
+  establish size limits or guarantee the intended consumption order.
+- Service dependencies: `Context.Service` and `Layer` before custom dependency
+  containers, singleton registries, or manual service construction at every call.
+  Use the platform-specific layers and adapters supported by the Worker runtime.
+- Cleanup and lifetime: `Scope`, scoped layers, and acquire/release primitives before
+  ad hoc finalizer bookkeeping. Preserve interruption and release guarantees.
+- HTTP, validation, and configuration: `HttpClient`, `HttpApi`, `Schema`, and `Config`
+  before bespoke transport wrappers, routing, input parsers, or environment parsing.
+- Concurrency, retries, and coordination: Effect's bounded concurrency, `Schedule`,
+  `Queue`, and `PubSub` before promise orchestration, retry timers, or custom queues.
+
+These are search starting points, not mandatory APIs for every function. Explore
+neighboring modules and supported companion integrations as the contract requires.
+A relevant companion package may be a better fit than custom code; verify its
+compatibility and propose any dependency change explicitly within the chosen scope.
+Use a Cloudflare-native API through the smallest Effect adaptation when no supported
+integration covers the requirement. Prefer plain control flow when no framework
+capability adds a useful guarantee; native-first does not mean decorative combinators.
 
 ## Readability review process
 

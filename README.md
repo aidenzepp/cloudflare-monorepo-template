@@ -2,7 +2,7 @@
 
 Minimal Bun workspace with Alchemy, Cloudflare Workers, Effect v4, and Vite Plus.
 
-See [the documentation index](docs/README.md) for Alchemy/Cloudflare references and implementation guidance.
+Start with [the onboarding guide](docs/onboarding.md) for the architecture, source map, development workflows, and native-capability review. [The documentation index](docs/README.md) links the focused guides; agents also follow [AGENTS.md](AGENTS.md).
 
 ```sh
 bun install --frozen-lockfile
@@ -13,9 +13,9 @@ bun run build
 bun test apps infra
 ```
 
-`apps/web` is the frontend entry point; `apps/api` owns the Worker and health endpoint. The initial frontend is plain HTML; React, routing, and UI components can be added intentionally in the next step. The root `alchemy.run.ts` defines the application deployment stack and yields the Effect-native API Worker, which serves the built frontend assets.
+`apps/web` contains a replaceable frontend scaffold; its current implementation does not establish the long-term frontend architecture. See [temporary frontend](docs/onboarding.md#temporary-frontend) before extending it. `apps/api` owns the Effect HTTP API. The root `alchemy.run.ts` defines the application deployment stack and yields the Effect-native API Worker, which currently serves the built frontend assets.
 
-Lint uses Ultracite Core and anti-slop plus a repository rule forbidding built-in try/catch. Skills include conventional-commits and document-code; documentation is not enforced by lint.
+Lint uses Ultracite Core and anti-slop plus a repository rule forbidding built-in try/catch. Repo-local skills cover Effect design, observability, error messages, code documentation, and atomic conventional commits; documentation is not enforced by lint.
 
 ## Local Worker tests
 
@@ -33,21 +33,18 @@ cleanup validation without deploying resources. Cloud integration tests remain a
 
 ## Cloud integration tests
 
-Following [Alchemy tutorial part 3](https://alchemy.run/cloudflare/tutorial/part-3/), tests use `alchemy/Test/Bun` to deploy a stack, assert against its live URL, and destroy it afterward on CI. Local runs retain the stack for inspection and faster reruns. Authenticate with Cloudflare first, build, then run:
+Cloud integration tests explicitly deploy the real Worker from the dedicated `infra/stacks/integration.ts` stack. After Cloudflare account setup and authorization to deploy test resources, build and choose a unique isolated stage:
 
 ```sh
-ALCHEMY_STAGE=test-local bun run test:integration
+bun run build
+ALCHEMY_TEST_STAGE=test-readme-1 bun run test:integration
 ```
 
-This creates billable cloud resources. Reuse the same isolated test stage locally. Set `CI=true` to run with automatic teardown. To remove a retained test stack explicitly:
-
-```sh
-bun run alchemy destroy --stage test-local
-```
+The harness requires `ALCHEMY_TEST_STAGE`, not `ALCHEMY_STAGE`. Use a different `test-…` stage for concurrent runs. Teardown always attempts to destroy the test stack in local runs and CI, including after setup or assertion failures; cleanup errors fail the run. Interrupted processes can leave resources behind. Follow [test isolation and recovery](docs/alchemy/cloudflare/testing.md) using the same dedicated stack and logged stage. Cloud tests create real resources; they are separate from local checks.
 
 Following [tutorial part 1](https://alchemy.run/cloudflare/tutorial/part-1/), the stack and test harness both use `Cloudflare.state()`. The first plan, deploy, or dev command requests permission to bootstrap the Cloudflare state-store Worker and its supporting resources. Authenticate using `bun run alchemy profile`; confirm the intended Cloudflare account during setup. Deployment and account verification have not yet been completed. The tutorial's sample R2 bucket is omitted until an application feature needs storage.
 
-CI checks and gated deployment/preview jobs follow [Part 5](docs/alchemy/cloudflare/ci-cd.md). Cloud jobs skip when both deployment secrets are absent; provisioning both secrets enables them. Partial configuration fails. Observability will be added through the tutorial. No cloud deployments are performed during the basic local checks.
+CI checks and gated deployment/preview jobs follow [Part 5](docs/alchemy/cloudflare/ci-cd.md). Cloud jobs skip when both deployment secrets are absent; provisioning both secrets enables them. Partial configuration fails. Native Cloudflare logs and traces are already wired through Alchemy; see [observability](docs/alchemy/cloudflare/observability.md). Cloud ingestion remains unverified. No cloud deployments are performed during the basic local checks.
 
 Versions are pinned, including the Alchemy v2 beta. No dependency release-age policy is configured.
 

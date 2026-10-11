@@ -1,5 +1,7 @@
 # Agent instructions
 
+Start with `docs/onboarding.md` when entering this repository. Follow its source map to the files and focused guides relevant to the task before making changes.
+
 Use `.agents/skills/conventional-commits/SKILL.md` when committing and `.agents/skills/document-code/SKILL.md` when writing or reviewing code.
 
 Use Effect error channels; built-in try/catch is prohibited by lint. Do not add function-decomposition, type-design, require-doc-comment, or Shadcn lint policies.
@@ -9,6 +11,8 @@ Run `bun run check`, `bun run build`, then `bun test apps infra` before completi
 Follow Alchemy’s documented Effect-native Worker construction and HTTP API patterns. Link the owning guide in code. Do not introduce a standalone fetch adapter or no-op filesystem into production; document any version-required deviations.
 
 Before implementing Alchemy/Cloudflare features, read `docs/alchemy/cloudflare/README.md` and its relevant upstream guide.
+
+Use supported Alchemy, Effect, and Cloudflare capabilities before building custom equivalents. Apply the native-capability review in `.agents/skills/effect-design/SKILL.md` to infrastructure, runtime integrations, streams, service dependencies, HTTP clients, concurrency, retries, and resource cleanup. Inspect installed APIs and relevant companion integrations; do not infer absence from one failed symbol search. In the implementation handoff, name the native capabilities selected and justify any custom glue with the verified gap it fills.
 
 ## Learning more about Effect
 
@@ -26,7 +30,7 @@ Keep request constraints in endpoint schemas. For endpoints with validated input
 
 ## Application structure
 
-Within each app, keep runtime and application assembly in `src/app/`, feature contracts and behavior in `src/features/<feature>/`, and concrete runtime integrations in `src/platform/` when needed. Do not create empty integration directories. Keep focused tests beside their implementation and whole-app tests with their fixtures in the app’s `tests/` directory. App-owned scripts stay under its `scripts/` directory. Preserve frontend framework conventions when organizing web apps.
+Within each app, keep runtime and application assembly in `src/app/`, feature contracts and behavior in `src/features/<feature>/`, and concrete runtime integrations in `src/platform/` when needed. Do not create empty integration directories. Keep focused tests beside their implementation and whole-app tests with their fixtures in the app’s `tests/` directory. App-owned scripts stay under its `scripts/` directory. Preserve frontend framework conventions when organizing web apps. The current HTML frontend is temporary; consult `docs/onboarding.md#temporary-frontend` and do not treat its layout or hosting model as lasting requirements.
 
 Use configured `@api/*`, `@infra/*`, `@test/*`, and the root application-stack alias `@stack` for TypeScript source imports, including sibling modules. Oxlint enforces this rule. Node-loaded `.mjs` lint plugins retain relative imports. Run Alchemy through `bun run alchemy` so stack loading uses the project’s tsconfig and aliases.
 
