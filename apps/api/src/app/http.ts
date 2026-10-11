@@ -5,6 +5,7 @@ import { Api } from "@api/app/api";
 import { DocumentationPaths } from "@api/app/documentation";
 import { makeHealthzHandlers } from "@api/features/healthz/handlers";
 import { makeLlmsHandlers } from "@api/features/llms/handlers";
+import { ValidationResponses } from "@api/platform/http/validation/middleware";
 
 /**
  * Registers API handlers, the OpenAPI document, and Effect's bundled Scalar UI.
@@ -17,6 +18,7 @@ import { makeLlmsHandlers } from "@api/features/llms/handlers";
  */
 export const makeHttpLayer = () =>
   Layer.mergeAll(
+    ValidationResponses,
     HttpApiBuilder.layer(Api, { openapiPath: DocumentationPaths.openapiJson }).pipe(
       Layer.provide([makeHealthzHandlers(), makeLlmsHandlers()]),
     ),

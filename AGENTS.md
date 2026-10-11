@@ -20,6 +20,8 @@ Use `.agents/skills/effect-design/SKILL.md` when writing or reviewing Effect cod
 
 Use `.agents/skills/error-messages/SKILL.md` when adding or changing caller-facing errors. For Effect HTTP APIs, use schema-backed tagged errors declared in endpoint contracts; the skill’s generic payload examples do not require a separate error envelope.
 
+Keep request constraints in endpoint schemas. For endpoints with validated inputs, declare `RequestValidationError` from `@api/platform/http/validation/error` in their error schemas so OpenAPI and typed clients match the shared 400 response. The global validation boundary preserves response encoding failures as 500s. See `docs/alchemy/cloudflare/validation.md`.
+
 ## Application structure
 
 Within each app, keep runtime and application assembly in `src/app/`, feature contracts and behavior in `src/features/<feature>/`, and concrete runtime integrations in `src/platform/` when needed. Do not create empty integration directories. Keep focused tests beside their implementation and whole-app tests with their fixtures in the app’s `tests/` directory. App-owned scripts stay under its `scripts/` directory. Preserve frontend framework conventions when organizing web apps.
