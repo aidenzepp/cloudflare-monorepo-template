@@ -2,12 +2,14 @@ import { expect } from "bun:test";
 import * as Test from "alchemy/Test/Bun";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Etag from "effect/http/Etag";
 import * as HttpRouter from "effect/http/HttpRouter";
+import * as HttpApiError from "effect/http-api/HttpApiError";
 import * as HttpApi from "effect/http-api/HttpApi";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as HttpApiEndpoint from "effect/http-api/HttpApiEndpoint";
@@ -53,10 +55,12 @@ const FixtureApi = HttpApi.make("validation-test").add(
  * Filesystem emulation is limited to this in-memory test adapter; production
  * continues using Alchemy's Worker runtime and asset bindings.
  *
- * @returns A scoped web handler and its successful input-handler call counter.
+ * @returns A scoped web handler, its input-handler call counter, and internal logs.
  */
 const makeFixture = Effect.fnUntraced(function* makeFixture() {
   const calls = yield* Ref.make(0);
+  const entries: Logger.Options<unknown>[] = [];
+  const logger = Logger.make((options) => entries.push(options));
   const handlers = HttpApiBuilder.group(FixtureApi, "fixture", (group) =>
     group
       .handle("input", () => Ref.update(calls, (count) => count + 1).pipe(Effect.as("accepted")))
@@ -73,13 +77,16 @@ const makeFixture = Effect.fnUntraced(function* makeFixture() {
           HttpApiBuilder.layer(FixtureApi).pipe(Layer.provide(handlers)),
           ValidationResponses,
         ).pipe(Layer.provide([HttpPlatformStub, Etag.layer, Path.layer, FileSystem.layerNoop({})])),
-        { disableLogger: true },
+        {
+          disableLogger: true,
+          middleware: (httpEffect) => httpEffect.pipe(Effect.provide(Logger.layer([logger]))),
+        },
       ),
     ),
     (handler) => Effect.promise(() => handler.dispose()),
   );
 
-  return { app, calls };
+  return { app, calls, entries };
 });
 
 test(
@@ -166,7 +173,7 @@ test(
 test(
   "response encoding failures and unrelated defects remain server errors",
   Effect.gen(function* verifyServerFailures() {
-    const { app } = yield* makeFixture();
+    const { app, entries } = yield* makeFixture();
 
     for (const path of ["/invalid-body", "/invalid-headers", "/defect"]) {
       const response = yield* Effect.tryPromise(() =>
@@ -180,6 +187,24 @@ test(
 
       if (path !== "/defect") {
         expect(JSON.parse(text)).toEqual({ message: "The server could not encode its response." });
+      }
+    }
+
+    const encodingLogs = entries.filter((entry) => entry.logLevel === "Error");
+    expect(encodingLogs).toHaveLength(2);
+
+    for (const [index, kind] of (["Body", "ResponseHeaders"] as const).entries()) {
+      const { message } = encodingLogs[index];
+      const errors = yield* Schema.decodeUnknownEffect(Schema.Array(Schema.Unknown))(message);
+      expect(errors).toHaveLength(1);
+
+      const [error] = errors;
+      expect(HttpApiError.HttpApiSchemaError.is(error)).toBe(true);
+
+      if (HttpApiError.HttpApiSchemaError.is(error)) {
+        expect(error.kind).toBe(kind);
+        expect(error.cause._tag).toBe("SchemaError");
+        expect(error.cause.issue).toBeDefined();
       }
     }
   }).pipe(Effect.scoped),
