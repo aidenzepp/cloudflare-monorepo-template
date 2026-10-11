@@ -1,5 +1,5 @@
 import * as HttpApi from "effect/http-api/HttpApi";
-import { HealthzApi } from "./healthz/api";
+import { HealthzApi } from "@api/features/healthz/api";
 
 /**
  * Composes the feature contracts exposed by this Worker.

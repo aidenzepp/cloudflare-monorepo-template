@@ -45,10 +45,31 @@ These APIs were checked against Effect 4.0.1's installed `Config.ts` and `Config
 
 ## Shared project identity
 
-`project.config.ts` owns the GitHub destination and Alchemy application stack name. Both stacks import it, so credentials and preview comments target the same repository. Its exported readonly object is static checked-in configuration; it requires no environment parser or Vite injection. Changing it updates consumers on their next run, rather than changing deployed infrastructure immediately.
+`infra/config/project.ts` owns the GitHub destination and Alchemy application stack name. Both stacks import it, so credentials and preview comments target the same repository. Its exported readonly object is static checked-in configuration; it requires no environment parser or Vite injection. Changing it updates consumers on their next run, rather than changing deployed infrastructure immediately.
 
 `Project.stackName` identifies Alchemy-managed state. Preserve it for existing deployments unless performing an intentional migration; it is not a display name. The admin stack derives its identity by adding `-github`.
 
 Package metadata remains in `package.json`; the HTTP API contract identifier remains `api`. Neither is an alias for the GitHub repository or stack identity. Keep values together when they share meaning, rather than combining unrelated identifiers merely because their strings currently match.
 
 Use Effect `Config` for environment-backed values that require decoding, validation, or defaults. `import.meta.env` is Vite's environment interface and does not establish shared repository configuration for Alchemy, tests, or other tooling.
+
+## Source imports
+
+`tsconfig.json` maps `@api/*` to `apps/api/src/`, `@infra/*` to `infra/`,
+and `@test/*` to the root cloud-test directory `test/`. `@stack` maps directly
+to the root `alchemy.run.ts` application stack; the separate GitHub admin stack
+lives in `infra/stacks/github.ts`. App-owned tests under `apps/api/tests/`
+import application source through `@api/*`.
+
+TypeScript source imports use these aliases, including sibling imports. Oxlint's
+`no-restricted-imports` rule rejects relative paths in `.ts` and `.tsx` files.
+Node-loaded `.mjs` lint plugins keep relative imports because Node does not resolve
+TypeScript path mappings.
+
+Use `bun run alchemy` from the repository root for Alchemy commands. The pinned
+Alchemy 2.0.0-beta.81 launcher starts Bun with its own tsconfig override, which
+cannot resolve this repository's aliases. The package script runs the same CLI
+entrypoint with the project tsconfig explicitly. Local scripts and CI use that
+command; recheck the adaptation when upgrading Alchemy.
+
+See the [pinned launcher source](https://github.com/alchemy-run/alchemy/blob/v2.0.0-beta.81/alchemy/bin/cli.js).

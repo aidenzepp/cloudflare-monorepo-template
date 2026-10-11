@@ -4,7 +4,7 @@ import * as GitHub from "alchemy/GitHub";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
-import { Project } from "../project.config";
+import { Project } from "@infra/config/project";
 
 /**
  * Provisions the deployment token and repository secrets using an admin profile.

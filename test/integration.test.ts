@@ -3,8 +3,8 @@ import * as Test from "alchemy/Test/Bun";
 import { expect } from "bun:test";
 import * as Effect from "effect/Effect";
 import * as ConfigProvider from "effect/ConfigProvider";
-import Stack from "../alchemy.run.ts";
-import { Ci } from "./config";
+import Stack from "@stack";
+import { Ci } from "@test/config";
 
 /**
  * Validates the test process cleanup flag before registering deployment hooks.

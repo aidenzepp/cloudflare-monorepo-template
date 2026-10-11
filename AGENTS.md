@@ -19,3 +19,9 @@ Preserve the pinned dependency versions and this repository's Alchemy/Bun testin
 Use `.agents/skills/effect-design/SKILL.md` when writing or reviewing Effect code and derived API/configuration composition. Read its labeled examples before applying its guidance.
 
 Use `.agents/skills/error-messages/SKILL.md` when adding or changing caller-facing errors. For Effect HTTP APIs, use schema-backed tagged errors declared in endpoint contracts; the skill’s generic payload examples do not require a separate error envelope.
+
+## Application structure
+
+Within each app, keep runtime and application assembly in `src/app/`, feature contracts and behavior in `src/features/<feature>/`, and concrete runtime integrations in `src/platform/` when needed. Do not create empty integration directories. Keep focused tests beside their implementation and whole-app tests with their fixtures in the app’s `tests/` directory. App-owned scripts stay under its `scripts/` directory. Preserve frontend framework conventions when organizing web apps.
+
+Use configured `@api/*`, `@infra/*`, `@test/*`, and the root application-stack alias `@stack` for TypeScript source imports, including sibling modules. Oxlint enforces this rule. Node-loaded `.mjs` lint plugins retain relative imports. Run Alchemy through `bun run alchemy` so stack loading uses the project’s tsconfig and aliases.

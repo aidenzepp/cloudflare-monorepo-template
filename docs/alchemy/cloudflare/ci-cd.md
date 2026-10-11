@@ -5,9 +5,9 @@ Follow [Alchemy tutorial Part 5](https://alchemy.run/cloudflare/tutorial/part-5/
 ## Repository setup
 
 - `.github/workflows/deploy.yml` runs formatting, lint, types, HTTP tests, and the frontend build on pushes to main and active PRs.
-- `project.config.ts` owns the shared GitHub owner/repository and application stack identity.
-- `stacks/github.ts` declares a scoped Cloudflare token and the two GitHub Actions secrets. It is a separate admin operation, not part of normal app deployment.
-- `alchemy.run.ts` declares the preview comment resource when `PULL_REQUEST` is supplied. Both Cloudflare and GitHub providers are composed with `Layer.mergeAll`.
+- `infra/config/project.ts` owns the shared GitHub owner/repository and application stack identity.
+- `infra/stacks/github.ts` declares a scoped Cloudflare token and the two GitHub Actions secrets. It is a separate admin operation, not part of normal app deployment.
+- Root `alchemy.run.ts` defines the application stack and declares the preview comment resource when `PULL_REQUEST` is supplied. Both Cloudflare and GitHub providers are composed with `Layer.mergeAll`.
 - `test/config.ts` remains test-owned. The workflow itself gets its CI context from GitHub Actions, so it does not need to import this file.
 
 ## Cloud deployment is deferred
@@ -16,7 +16,7 @@ A credential-check job determines whether both `CLOUDFLARE_API_TOKEN` and `CLOUD
 
 Provisioning both secrets enables cloud operations on the next qualifying event, including production deployment on a push to main. No separate deployment-enable variable is required.
 
-When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. None of these account or secret operations have been performed.
+When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `infra/stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. None of these account or secret operations have been performed.
 
 When credentials are available, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
 

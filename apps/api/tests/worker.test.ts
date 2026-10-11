@@ -5,8 +5,8 @@ import * as Test from "alchemy/Test/Bun";
 import * as Effect from "effect/Effect";
 import * as OpenApi from "effect/http-api/OpenApi";
 import * as HttpClient from "effect/http/HttpClient";
-import { Api } from "./api";
-import ApiWorker from "./worker";
+import { Api } from "@api/app/api";
+import ApiWorker from "@api/app/worker";
 
 /**
  * Runs the actual Worker locally with isolated state and no cloud deployment.

@@ -4,8 +4,8 @@ import * as Effect from "effect/Effect";
 import * as GitHub from "alchemy/GitHub";
 import * as Layer from "effect/Layer";
 import * as Output from "alchemy/Output";
-import ApiWorker from "./apps/api/src/worker";
-import { Project } from "./project.config";
+import ApiWorker from "@api/app/worker";
+import { Project } from "@infra/config/project";
 
 /**
  * Provisions the Effect-native Worker defined by the API application.

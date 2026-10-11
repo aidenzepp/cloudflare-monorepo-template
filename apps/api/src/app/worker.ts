@@ -5,7 +5,7 @@ import * as Path from "effect/Path";
 import * as Etag from "effect/http/Etag";
 import * as HttpPlatform from "effect/http/HttpPlatform";
 import * as HttpRouter from "effect/http/HttpRouter";
-import { makeHttpLayer } from "./http";
+import { makeHttpLayer } from "@api/app/http";
 
 /**
  * Supplies the JSON-only platform stub used by Alchemy's HTTP API guide.

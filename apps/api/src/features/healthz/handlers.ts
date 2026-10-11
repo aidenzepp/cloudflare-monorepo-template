@@ -1,6 +1,6 @@
 import * as Effect from "effect/Effect";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
-import { Api } from "../api";
+import { Api } from "@api/app/api";
 
 /**
  * Implements the liveness contract with a schema-checked successful response.

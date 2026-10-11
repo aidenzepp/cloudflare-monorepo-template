@@ -27,6 +27,28 @@ export default defineConfig({
     extends: [core, antiSlop],
     ignorePatterns: ["dist/**", ".agents/**"],
     jsPlugins: ["./tools/lint-plugin.mjs", "@stylistic/eslint-plugin"],
+    // Keep application and infrastructure imports stable when files move.
+    // Node-loaded lint plugins retain relative .mjs imports because Node does not use TS paths.
+    // https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports
+    overrides: [
+      {
+        files: ["**/*.ts", "**/*.tsx"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              patterns: [
+                {
+                  message:
+                    "Use a configured @api/*, @infra/*, or @test/* alias instead of a relative source import.",
+                  regex: "^\\.{1,2}/",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
     rules: {
       "@stylistic/padding-line-between-statements": [
         "error",

@@ -8,7 +8,13 @@
     "skipLibCheck": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "types": ["bun", "node", "@cloudflare/workers-types"]
+    "types": ["bun", "node", "@cloudflare/workers-types"],
+    "paths": {
+      "@stack": ["./alchemy.run.ts"],
+      "@api/*": ["./apps/api/src/*"],
+      "@infra/*": ["./infra/*"],
+      "@test/*": ["./test/*"]
+    }
   },
-  "include": ["apps", "test", "stacks", "alchemy.run.ts", "project.config.ts", "vite.config.ts"]
+  "include": ["apps", "test", "alchemy.run.ts", "vite.config.ts", "infra"]
 }
