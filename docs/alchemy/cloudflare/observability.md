@@ -20,4 +20,6 @@ The native bridge forwards scalar span attributes. Nested object attributes, spa
 
 After deployment, select the Worker in the Cloudflare dashboard and open its observability logs and traces. Request `/api/healthz`; sampled traces should contain the `healthz.get` span. This is the initial live verification to perform when Cloudflare account setup is authorized.
 
-Local HTTP tests verify the response contract, not Cloudflare ingestion. `bun run alchemy dev` tracing depends on the local runtime; a successful local request does not prove dashboard recording. Cloud account connection, deployment, and live telemetry verification remain deferred.
+Use `.agents/skills/trace-effect/SKILL.md` to implement and review comprehensive tracing and logging across meaningful operations. Review instrumentation as part of code review rather than adding tests for each endpoint span or log message. The validation boundary tests retain a focused check that response-encoding diagnostics survive while HTTP responses remain curated; their logger collector exists only in tests.
+
+Local tests verify error-boundary diagnostics and HTTP contracts, not Cloudflare ingestion. `bun run alchemy dev` tracing depends on the local runtime; a successful local request does not prove dashboard recording. Cloud account connection, deployment, and live telemetry verification remain deferred.

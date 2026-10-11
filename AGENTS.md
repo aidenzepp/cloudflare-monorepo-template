@@ -18,6 +18,8 @@ Preserve the pinned dependency versions and this repository's Alchemy/Bun testin
 
 Use `.agents/skills/effect-design/SKILL.md` when writing or reviewing Effect code and derived API/configuration composition. Read its labeled examples before applying its guidance.
 
+Use `.agents/skills/trace-effect/SKILL.md` when adding or changing effectful application operations or reviewing their observability. Maximize useful tracing and logging across meaningful operations, including database queries and external requests, to diagnose failures and inefficiencies. Review coverage without generating tests for every span or log message.
+
 Use `.agents/skills/error-messages/SKILL.md` when adding or changing caller-facing errors. For Effect HTTP APIs, use schema-backed tagged errors declared in endpoint contracts; the skill’s generic payload examples do not require a separate error envelope.
 
 Keep request constraints in endpoint schemas. For endpoints with validated inputs, declare `RequestValidationError` from `@api/platform/http/validation/error` in their error schemas so OpenAPI and typed clients match the shared 400 response. The global validation boundary preserves response encoding failures as 500s. See `docs/alchemy/cloudflare/validation.md`.
