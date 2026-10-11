@@ -24,7 +24,15 @@ Cleanup calls the same helper in `cleanup` mode, which additionally validates th
 
 When credentials are available, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
 
-The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. Cloud integration tests are not part of this initial workflow; its tests are the account-free HTTP and stage-selection tests. Run them with `bun test apps infra`. Stage tests also execute the CI helper and confirm rejected cleanup contexts emit no output; they never invoke Alchemy deployment or destruction. Cloud permissions, previews, comments, and destruction remain unverified until account setup.
+The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. The account-free HTTP and stage-selection tests run with `bun test apps infra`. Stage tests also execute the CI helper and confirm rejected cleanup contexts emit no output; they never invoke Alchemy deployment or destruction.
+
+## Cloud integration gate
+
+After local checks pass, the `integration` job builds the assets and runs `bun run test:integration` on main pushes and active same-repository PRs when both Cloudflare secrets are available. Fork PRs, closed PRs, and repositories without cloud credentials skip this job. Its stage is `test-ci-${{ github.run_id }}-${{ github.run_attempt }}`, separating concurrent runs and rerun attempts. The dedicated test stack verifies the deployed health endpoint and attempts teardown before the job finishes; cleanup failures also fail the job.
+
+The `deploy` job depends on `integration`, so failed or skipped integration jobs block app deployment. There is no `continue-on-error` or status-condition override. This follows [GitHub's job dependency semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds). PR-close cleanup depends only on the credential check so it can still remove previews without running integration tests.
+
+The integration job has a ten-minute timeout. Forced cancellation or timeout may interrupt teardown; recover with the logged stage using [the test recovery instructions](testing.md). Cloud permissions, deployment, and provider deletion remain unverified until account setup and an actual cloud run.
 
 ## Configuration boundaries
 

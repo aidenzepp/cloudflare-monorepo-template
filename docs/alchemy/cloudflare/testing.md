@@ -17,8 +17,12 @@ The pinned Alchemy harness reads `ALCHEMY_TEST_STAGE`, not `ALCHEMY_STAGE`. The 
 
 This follows [Alchemy Part 3](https://alchemy.run/cloudflare/tutorial/part-3/), with deliberate differences: a dedicated test stack, required validated stage, and teardown locally as well as in CI. Stage and hook behavior were checked against [pinned Core.ts](https://github.com/alchemy-run/alchemy/blob/v2.0.0-beta.81/alchemy/src/Test/Core.ts) and [Bun.ts](https://github.com/alchemy-run/alchemy/blob/v2.0.0-beta.81/alchemy/src/Test/Bun.ts).
 
+## CI gate
+
+The deployment workflow runs this suite after local checks on main pushes and active same-repository PRs when both Cloudflare secrets are configured. It assigns `test-ci-${{ github.run_id }}-${{ github.run_attempt }}` and requires the integration job to succeed before application deployment. See [CI/CD](ci-cd.md).
+
 ## Interrupted runs
 
 Forced process termination, network outages, or provider deletion failures can leave resources behind. Keep the logged stage name and use the same test stack and stage for recovery; do not remove its Alchemy state before cleanup succeeds. Rerunning the suite with that same stage reconciles the resources and attempts teardown again. Do this only after the previous process has stopped.
 
-Cleanup removes resources managed by the test stack. Cloudflare-hosted Alchemy state infrastructure is shared infrastructure and remains in place. Future storage fixtures need their own deliberate disposal policy; this change adds no storage, database, authentication, or CI cloud-test job.
+Cleanup removes resources managed by the test stack. Cloudflare-hosted Alchemy state infrastructure is shared infrastructure and remains in place. Future storage fixtures need their own deliberate disposal policy; the test stack adds no storage, database, or authentication.
