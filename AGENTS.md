@@ -45,3 +45,9 @@ project identity as checked-in data, positional CLI arguments under their argume
 parser, Vite client settings under `import.meta.env`, and raw environment forwarding
 to subprocesses as `process.env`. These are different sources or responsibilities,
 not reasons to introduce manual environment parsing. See `docs/alchemy/configuration.md`.
+
+## Schema intent
+
+Data models shape the rest of the application. Before changing a schema, establish the expected domain meaning, data preservation requirements, and compatibility preferences from the user’s instructions and current project context. If those expectations are unclear, check with the user before making consequential assumptions. Do not ask again when the relevant expectation is already settled.
+
+Do not introduce nullable fields, legacy repair paths, transitional models, or compatibility layers merely because earlier development iterations used a different shape. Nullability must represent an actual optional domain value; backwards compatibility must serve an established requirement. Likewise, do not infer permission to discard existing data from the absence of a compatibility requirement. Make schema choices reflect the intended application rather than speculative historical constraints.
