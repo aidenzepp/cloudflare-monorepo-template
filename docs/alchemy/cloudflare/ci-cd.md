@@ -5,6 +5,7 @@ Follow [Alchemy tutorial Part 5](https://alchemy.run/cloudflare/tutorial/part-5/
 ## Repository setup
 
 - `.github/workflows/deploy.yml` runs formatting, lint, types, HTTP tests, and the frontend build on pushes to main and active PRs.
+- `.github/actions/setup/action.yml` owns the pinned Bun setup and frozen dependency installation shared by checks, integration, deployment, and cleanup. Each job checks out its intended revision before invoking the local action. Job dependencies, conditions, permissions, and concurrency remain in the workflow.
 - `infra/config/project.ts` owns the shared GitHub owner/repository, application stack identity, production stage, and preview prefix.
 - `infra/stacks/github.ts` declares a scoped Cloudflare token and the two GitHub Actions secrets. It is a separate admin operation, not part of normal app deployment.
 - Root `alchemy.run.ts` defines the application stack and declares the preview comment resource when `PULL_REQUEST` is supplied. Both Cloudflare and GitHub providers are composed with `Layer.mergeAll`.
