@@ -21,6 +21,7 @@ export default Alchemy.Stack(
   { providers: Cloudflare.providers(), state: Cloudflare.state() },
   Effect.gen(function* provisionIntegrationStack() {
     yield* Config.schema(IntegrationStage).parse(ConfigProvider.fromUnknown(yield* Stage));
+
     const worker = yield* ApiWorker;
 
     return { url: worker.url };

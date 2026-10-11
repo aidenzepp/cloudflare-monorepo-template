@@ -57,7 +57,11 @@ export default defineConfig({
         {
           blankLine: "always",
           next: "const",
-          prev: { selector: 'ExpressionStatement[expression.type="CallExpression"]' },
+          // Effect generator calls are wrapped in yield expressions.
+          prev: {
+            selector:
+              'ExpressionStatement:matches([expression.type="CallExpression"], [expression.type="YieldExpression"][expression.argument.type="CallExpression"])',
+          },
         },
         { blankLine: "always", next: "return", prev: "*" },
         { blankLine: "always", next: "*", prev: "if" },
