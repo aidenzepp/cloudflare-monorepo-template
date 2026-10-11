@@ -18,5 +18,5 @@ export const makeHttpLayer = () =>
     HttpApiBuilder.layer(Api, { openapiPath: "/api/openapi.json" }).pipe(
       Layer.provide(makeHealthzHandlers()),
     ),
-    HttpApiScalar.layer(Api, { path: "/api/openapi", scalar: { withDefaultFonts: false } }),
+    HttpApiScalar.layer(Api, { path: "/api/docs", scalar: { withDefaultFonts: false } }),
   );

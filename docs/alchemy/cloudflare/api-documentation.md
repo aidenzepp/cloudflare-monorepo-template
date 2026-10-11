@@ -2,7 +2,7 @@
 
 The assembled `Api` in `apps/api/src/app/api.ts` is the source of truth. It composes contracts owned by `apps/api/src/features/<feature>/api.ts`; the health contract currently lives in `apps/api/src/features/healthz/api.ts`. Effect generates the specification from endpoint schemas, declared errors, security, and annotations. Describe public behavior in those contracts rather than editing generated output.
 
-`apps/api/src/app/http.ts` registers both `/api/openapi.json` and `/api/openapi` using Effect's HttpApiBuilder and bundled HttpApiScalar. Scalar supplies the interactive UI and request testing; there is no custom documentation frontend. Default font downloads are disabled. Both routes live under `/api/*` so Cloudflare's existing runWorkerFirst asset policy routes them through the Worker.
+`apps/api/src/app/http.ts` registers both `/api/openapi.json` and `/api/docs` using Effect's HttpApiBuilder and bundled HttpApiScalar. Scalar supplies the interactive UI and request testing; there is no custom documentation frontend. Default font downloads are disabled. Both routes live under `/api/*` so Cloudflare's existing runWorkerFirst asset policy routes them through the Worker.
 
 Run `bun run api:export` from the repository root to write `generated/openapi.json` without connecting to Cloudflare. CI exports and uploads it as the `openapi` artifact. This enables downstream generators without maintaining a second API definition. The generated directory is ignored; no generated SDK or CLI is installed or published yet.
 
