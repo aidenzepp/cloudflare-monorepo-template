@@ -104,6 +104,22 @@ test(
 );
 
 test(
+  "llms.txt serves discovery links on the current deployment origin",
+  Effect.gen(function* verifyDiscovery() {
+    const outputs = yield* stack;
+    const response = yield* HttpClient.get(`${outputs.url}/llms.txt`);
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/plain");
+
+    const markdown = yield* response.text;
+    expect(markdown).toContain("# Cloudflare Monorepo Template");
+    expect(markdown).toContain(`[OpenAPI JSON](${outputs.url}/api/openapi.json)`);
+    expect(markdown).toContain(`[Interactive API reference](${outputs.url}/api/docs)`);
+    expect(markdown).not.toContain("/api/healthz");
+  }),
+);
+
+test(
   "Worker serves the built frontend assets",
   Effect.gen(function* verifyAssets() {
     const outputs = yield* stack;
