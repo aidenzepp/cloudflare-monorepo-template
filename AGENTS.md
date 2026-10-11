@@ -32,19 +32,13 @@ Use configured `@api/*`, `@infra/*`, `@test/*`, and the root application-stack a
 
 ## Configuration
 
-Use Effect `Config` as the standard for interpreting environment-backed application,
-stack, test, and tooling settings. Define decoding, constraints, optional values, and
-missing-value defaults in Config/Schema; invalid supplied values must fail through
-the Effect error channel. Parse at the owning runtime boundary and test with
-`ConfigProvider.fromUnknown` rather than mutating the host environment.
+Use Effect `Config` as the standard for interpreting environment-backed application, stack, test, and tooling settings. Define decoding, constraints, optional values, and missing-value defaults in Config/Schema; invalid supplied values must fail through the Effect error channel. Parse at the owning runtime boundary and test with `ConfigProvider.fromUnknown` rather than mutating the host environment.
 
-Process tooling and stack settings explicitly use `ConfigProvider.fromEnv()`.
-Worker runtime configuration follows Alchemy's binding/provider integration; do not
-assume the deployment process environment is the Worker's environment. Keep static
-project identity as checked-in data, positional CLI arguments under their argument
-parser, Vite client settings under `import.meta.env`, and raw environment forwarding
-to subprocesses as `process.env`. These are different sources or responsibilities,
-not reasons to introduce manual environment parsing. See `docs/alchemy/configuration.md`.
+Process tooling and stack settings explicitly use `ConfigProvider.fromEnv()`. Worker runtime configuration follows Alchemy's binding/provider integration; do not assume the deployment process environment is the Worker's environment. Keep static project identity as checked-in data, positional CLI arguments under their argument parser, Vite client settings under `import.meta.env`, and raw environment forwarding to subprocesses as `process.env`. These are different sources or responsibilities, not reasons to introduce manual environment parsing. See `docs/alchemy/configuration.md`.
+
+## Caller documentation
+
+Treat `llms.txt` as a concise discovery entry point: project context, links to authoritative specifications, and essential guidance that cannot be documented there. Keep endpoint paths, methods, payloads, responses, errors, and authentication requirements in their owning specifications, not duplicated prose in `llms.txt`. If specification coverage is missing, address it in the owning specification rather than maintaining a second contract in discovery. Derive discovery links from shared route definitions and the current request origin.
 
 ## Schema intent
 
