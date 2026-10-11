@@ -84,3 +84,19 @@ export const deploymentStage = Effect.fnUntraced(function* deploymentStage(
     ? Project.stages.production
     : yield* makePreviewStage(event.PULL_REQUEST);
 });
+
+/**
+ * Reserves cloud integration runs for explicit test stages, separate from app
+ * development, production, and PR previews. Suffixes use lowercase letters,
+ * digits, and internal hyphens; callers choose a unique suffix for concurrent runs.
+ */
+export const IntegrationStage = Schema.String.check(
+  Schema.isTrimmed(),
+  Schema.isPattern(
+    new RegExp(`^${Regex.escape(Project.stages.integrationPrefix)}[a-z0-9]+(?:-[a-z0-9]+)*$`, "u"),
+    {
+      message:
+        "Choose an isolated test stage such as test-123 using lowercase letters, digits, and internal hyphens.",
+    },
+  ),
+);

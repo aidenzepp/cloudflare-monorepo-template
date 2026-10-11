@@ -4,9 +4,11 @@ import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
+import { IntegrationTestStage } from "@test/config";
 import { Project } from "@infra/config/project";
 import {
   deploymentStage,
+  IntegrationStage,
   makePreviewStage,
   PreviewPullRequest,
   PreviewStage,
@@ -144,5 +146,42 @@ test(
       ).pipe(Effect.flip);
       expect(error._tag).toBe("ConfigError");
     }
+  }),
+);
+
+test(
+  "cloud tests require an isolated stage through Config",
+  Effect.gen(function* verifyIntegrationStage() {
+    for (const stage of ["test-123", "test-run-42-attempt-2"]) {
+      expect(
+        yield* IntegrationTestStage.parse(
+          ConfigProvider.fromUnknown({ ALCHEMY_TEST_STAGE: stage }),
+        ),
+      ).toBe(stage);
+      expect(yield* Schema.decodeUnknownEffect(IntegrationStage)(stage)).toBe(stage);
+    }
+    for (const stage of [
+      undefined,
+      "",
+      "prod",
+      "dev",
+      "pr-42",
+      "test-",
+      "test_123",
+      "test-ABC",
+      "test-123\n",
+      " test-123",
+      "test--123",
+      "test-123-",
+    ]) {
+      const error = yield* IntegrationTestStage.parse(
+        ConfigProvider.fromUnknown({ ALCHEMY_TEST_STAGE: stage }),
+      ).pipe(Effect.flip);
+      expect(error._tag).toBe("ConfigError");
+    }
+    const error = yield* IntegrationTestStage.parse(
+      ConfigProvider.fromUnknown({ ALCHEMY_STAGE: "test-123" }),
+    ).pipe(Effect.flip);
+    expect(error._tag).toBe("ConfigError");
   }),
 );

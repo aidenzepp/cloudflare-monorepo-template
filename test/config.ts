@@ -1,12 +1,11 @@
 import * as Config from "effect/Config";
+import { IntegrationStage } from "@infra/config/stages";
 
 /**
- * Enables integration-test teardown on CI and retains local resources by default.
- * Reads the test process environment, rather than creating a Worker binding.
- * Missing CI resolves to false without setting process.env.CI; the string
- * "false" is parsed as false instead of triggering cleanup through truthiness.
- * Invalid values fail configuration parsing before test hooks are registered.
+ * Requires an explicit isolated stage before cloud test hooks are registered.
+ * No user-name fallback can silently reuse another run's resources. Both deploy
+ * and destroy receive this same parsed value through the test harness.
  *
- * @see https://alchemy.run/cloudflare/tutorial/part-3/#destroy-after-tests-on-ci
+ * @see https://github.com/alchemy-run/alchemy/blob/v2.0.0-beta.81/alchemy/src/Test/Core.ts
  */
-export const Ci = Config.Boolean("CI").pipe(Config.withDefault(false));
+export const IntegrationTestStage = Config.schema(IntegrationStage, "ALCHEMY_TEST_STAGE");

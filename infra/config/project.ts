@@ -15,6 +15,7 @@ export const Project = {
   },
   stackName: "cloudflare-monorepo-template",
   stages: {
+    integrationPrefix: "test-",
     previewPrefix: "pr-",
     production: "prod",
   },
