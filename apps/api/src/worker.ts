@@ -43,7 +43,8 @@ export default Cloudflare.Worker(
   "Api",
   {
     assets: { directory: "./dist", runWorkerFirst: ["/api/*"] },
-    compatibility: { date: "2026-10-06" },
+    // The pinned local workerd binary supports compatibility dates through 2026-09-25.
+    compatibility: { date: "2026-09-25" },
     main: import.meta.url,
   },
   Effect.sync(() => ({

@@ -51,6 +51,7 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - run: bun run check
+      - run: bun run build
       - run: bun test apps
       - run: bun run api:export
       - uses: actions/upload-artifact@v4
@@ -58,7 +59,6 @@ jobs:
           name: openapi
           path: generated/openapi.json
           if-no-files-found: error
-      - run: bun run build
 
   deploy:
     needs: [checks, cloudflare]

@@ -9,13 +9,26 @@ bun install --frozen-lockfile
 bun run build
 bun run dev
 bun run check
-bun test apps
 bun run build
+bun test apps
 ```
 
 `apps/web` is the frontend entry point; `apps/api` owns the Worker and health endpoint. The initial frontend is plain HTML; React, routing, and UI components can be added intentionally in the next step. One root Alchemy stack yields the Effect-native API Worker, which serves the built frontend assets.
 
 Lint uses Ultracite Core and anti-slop plus a repository rule forbidding built-in try/catch. Skills include conventional-commits and document-code; documentation is not enforced by lint.
+
+## Local Worker tests
+
+Build frontend assets with `bun run build` before running `bun test apps`.
+Tests start the actual API Worker in local workerd through Alchemy's
+Effect-aware `Test.make({ dev: true })` harness. An isolated test stack,
+`test-local` stage, and local state keep them separate from application dev
+resources; cleanup destroys the local test stack after the suite.
+No Cloudflare account or cloud deployment is required. The Worker compatibility
+date matches the newest date supported by the pinned local workerd runtime.
+
+The tests cover health, unsupported requests, OpenAPI, Scalar, and built
+frontend asset routing. Cloud integration tests remain a separate command.
 
 ## Cloud integration tests
 
