@@ -14,4 +14,8 @@ export const Project = {
     repository: "cloudflare-monorepo-template",
   },
   stackName: "cloudflare-monorepo-template",
+  stages: {
+    previewPrefix: "pr-",
+    production: "prod",
+  },
 } as const;

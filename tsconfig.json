@@ -16,5 +16,5 @@
       "@test/*": ["./test/*"]
     }
   },
-  "include": ["apps", "test", "alchemy.run.ts", "vite.config.ts", "infra"]
+  "include": ["apps", "test", "alchemy.run.ts", "vite.config.ts", "infra", "tools"]
 }

@@ -10,7 +10,7 @@ bun run build
 bun run dev
 bun run check
 bun run build
-bun test apps
+bun test apps infra
 ```
 
 `apps/web` is the frontend entry point; `apps/api` owns the Worker and health endpoint. The initial frontend is plain HTML; React, routing, and UI components can be added intentionally in the next step. The root `alchemy.run.ts` defines the application deployment stack and yields the Effect-native API Worker, which serves the built frontend assets.
@@ -27,8 +27,9 @@ resources; cleanup destroys the local test stack after the suite.
 No Cloudflare account or cloud deployment is required. The Worker compatibility
 date matches the newest date supported by the pinned local workerd runtime.
 
-The tests cover health, unsupported requests, OpenAPI, Scalar, and built
-frontend asset routing. Cloud integration tests remain a separate command.
+The tests cover health, unsupported requests, OpenAPI, Scalar, discovery, validation, and built
+frontend asset routing. `bun test apps infra` also checks stage selection and preview
+cleanup validation without deploying resources. Cloud integration tests remain a separate command.
 
 ## Cloud integration tests
 

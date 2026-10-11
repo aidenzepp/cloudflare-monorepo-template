@@ -5,7 +5,7 @@ Follow [Alchemy tutorial Part 5](https://alchemy.run/cloudflare/tutorial/part-5/
 ## Repository setup
 
 - `.github/workflows/deploy.yml` runs formatting, lint, types, HTTP tests, and the frontend build on pushes to main and active PRs.
-- `infra/config/project.ts` owns the shared GitHub owner/repository and application stack identity.
+- `infra/config/project.ts` owns the shared GitHub owner/repository, application stack identity, production stage, and preview prefix.
 - `infra/stacks/github.ts` declares a scoped Cloudflare token and the two GitHub Actions secrets. It is a separate admin operation, not part of normal app deployment.
 - Root `alchemy.run.ts` defines the application stack and declares the preview comment resource when `PULL_REQUEST` is supplied. Both Cloudflare and GitHub providers are composed with `Layer.mergeAll`.
 - `test/config.ts` remains test-owned. The workflow itself gets its CI context from GitHub Actions, so it does not need to import this file.
@@ -18,9 +18,13 @@ Provisioning both secrets enables cloud operations on the next qualifying event,
 
 When account setup is authorized, follow the tutorial's admin-profile instructions, confirm the account and repository, and explicitly deploy `infra/stacks/github.ts`. Its current token permissions cover Workers and the state store; review permissions against the resources being deployed. None of these account or secret operations have been performed.
 
+`infra/config/stages.ts` derives and validates preview names from `Project.stages.previewPrefix`. GitHub Actions calls `tools/ci/deployment-stage.ts deploy` to emit its stage output: push events select `Project.stages.production`, while PR events require a positive safe-integer PR number. Missing PR numbers and unsupported events fail before deployment. The workflow passes the resulting step output to Alchemy.
+
+Cleanup calls the same helper in `cleanup` mode, which additionally validates the result against `PreviewStage` before emitting any output. The schema rejects production, zero/negative PR numbers, leading zeros, whitespace, and suffixes such as `pr-12-extra`. Cleanup still checks out main, uses the application stack there, and keeps the existing same-repository and concurrency guards.
+
 When credentials are available, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
 
-The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. Cloud integration tests are not part of this initial workflow; its tests are the account-free HTTP tests. Cloud permissions, previews, comments, and destruction remain unverified until account setup.
+The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. Cloud integration tests are not part of this initial workflow; its tests are the account-free HTTP and stage-selection tests. Run them with `bun test apps infra`. Stage tests also execute the CI helper and confirm rejected cleanup contexts emit no output; they never invoke Alchemy deployment or destruction. Cloud permissions, previews, comments, and destruction remain unverified until account setup.
 
 ## Configuration boundaries
 
