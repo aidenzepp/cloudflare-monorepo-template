@@ -1,4 +1,5 @@
 import * as ConfigProvider from "effect/ConfigProvider";
+import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { deploymentStage, PreviewStage } from "@infra/config/stages";
@@ -20,7 +21,7 @@ const program = Effect.gen(function* emitDeploymentStage() {
     yield* Schema.decodeUnknownEffect(PreviewStage)(stage);
   }
 
-  yield* Effect.sync(() => process.stdout.write(`stage=${stage}\n`));
+  yield* Console.log(`stage=${stage}`);
 });
 
 await Effect.runPromise(program);
