@@ -27,6 +27,28 @@ export default defineConfig({
     extends: [core, antiSlop],
     ignorePatterns: ["dist/**", ".agents/**"],
     jsPlugins: ["./tools/lint-plugin.mjs", "@stylistic/eslint-plugin"],
+    // Keep application and infrastructure imports stable when files move.
+    // Node-loaded lint plugins retain relative .mjs imports because Node does not use TS paths.
+    // https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports
+    overrides: [
+      {
+        files: ["**/*.ts", "**/*.tsx"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              patterns: [
+                {
+                  message:
+                    "Use a configured @api/*, @infra/*, or @test/* alias instead of a relative source import.",
+                  regex: "^\\.{1,2}/",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
     rules: {
       "@stylistic/padding-line-between-statements": [
         "error",
@@ -35,12 +57,18 @@ export default defineConfig({
         {
           blankLine: "always",
           next: "const",
-          prev: { selector: 'ExpressionStatement[expression.type="CallExpression"]' },
+          // Effect generator calls are wrapped in yield expressions.
+          prev: {
+            selector:
+              'ExpressionStatement:matches([expression.type="CallExpression"], [expression.type="YieldExpression"][expression.argument.type="CallExpression"])',
+          },
         },
         { blankLine: "always", next: "return", prev: "*" },
         { blankLine: "always", next: "*", prev: "if" },
         { blankLine: "always", next: "*", prev: effectLogStatement },
       ],
+      // Related Effect schemas and errors form one cohesive module.
+      "max-classes-per-file": "off",
       // Effect adapters return existing promises without introducing async wrappers.
       "typescript/promise-function-async": "off",
       "workspace/no-built-in-try-catch": "error",

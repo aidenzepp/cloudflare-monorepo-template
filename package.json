@@ -6,19 +6,20 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "alchemy dev",
+    "dev": "bun run alchemy dev",
     "build": "vp build",
     "lint": "vp lint --type-aware",
     "format": "vp fmt --check",
     "fix": "vp fmt && vp lint --fix",
     "typecheck": "tsc --noEmit",
     "check": "bun run format && bun run lint && bun run typecheck",
-    "test": "bun test apps",
+    "test": "bun test apps infra",
     "test:integration": "bun test test/integration.test.ts",
-    "infra:plan": "bun run build && alchemy plan --stage dev",
-    "infra:deploy": "bun run build && alchemy deploy --stage dev",
+    "infra:plan": "bun run build && bun run alchemy plan --stage dev",
+    "infra:deploy": "bun run build && bun run alchemy deploy --stage dev",
     "dev:web": "vp dev",
-    "api:export": "bun apps/api/scripts/export-openapi.ts"
+    "api:export": "bun apps/api/scripts/export-openapi.ts",
+    "alchemy": "bun --tsconfig-override ./tsconfig.json ./node_modules/alchemy/bin/alchemy.js"
   },
   "dependencies": {
     "alchemy": "2.0.0-beta.81",

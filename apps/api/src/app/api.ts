@@ -1,5 +1,6 @@
 import * as HttpApi from "effect/http-api/HttpApi";
-import { HealthzApi } from "./healthz/api";
+import { HealthzApi } from "@api/features/healthz/api";
+import { LlmsApi } from "@api/features/llms/api";
 
 /**
  * Composes the feature contracts exposed by this Worker.
@@ -7,4 +8,4 @@ import { HealthzApi } from "./healthz/api";
  * The identifier "api" names this contract, independently of deployment identity
  * and endpoint paths; it does not need to change when the template is renamed.
  */
-export const Api = HttpApi.make("api").add(HealthzApi);
+export const Api = HttpApi.make("api").add(HealthzApi).add(LlmsApi);

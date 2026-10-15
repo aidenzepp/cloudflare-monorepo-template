@@ -5,7 +5,8 @@ import * as Path from "effect/Path";
 import * as Etag from "effect/http/Etag";
 import * as HttpPlatform from "effect/http/HttpPlatform";
 import * as HttpRouter from "effect/http/HttpRouter";
-import { makeHttpLayer } from "./http";
+import { makeHttpLayer } from "@api/app/http";
+import { DocumentationPaths } from "@api/app/documentation";
 
 /**
  * Supplies the JSON-only platform stub used by Alchemy's HTTP API guide.
@@ -42,8 +43,9 @@ export const HttpPlatformStub = Layer.succeed(HttpPlatform.HttpPlatform, {
 export default Cloudflare.Worker(
   "Api",
   {
-    assets: { directory: "./dist", runWorkerFirst: ["/api/*"] },
-    compatibility: { date: "2026-10-06" },
+    assets: { directory: "./dist", runWorkerFirst: ["/api/*", DocumentationPaths.llms] },
+    // The pinned local workerd binary supports compatibility dates through 2026-09-25.
+    compatibility: { date: "2026-09-25" },
     main: import.meta.url,
   },
   Effect.sync(() => ({

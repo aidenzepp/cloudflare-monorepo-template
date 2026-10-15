@@ -16,9 +16,6 @@ concurrency:
   group: deploy-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
-env:
-  STAGE: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'prod' }}
-
 jobs:
   cloudflare:
     runs-on: ubuntu-latest
@@ -46,22 +43,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.2
-      - run: bun install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: bun run check
-      - run: bun test apps
+      - run: bun run build
+      - run: bun test apps infra
       - run: bun run api:export
       - uses: actions/upload-artifact@v4
         with:
           name: openapi
           path: generated/openapi.json
           if-no-files-found: error
+
+  integration:
+    needs: [checks, cloudflare]
+    if: >-
+      needs.cloudflare.outputs.configured == 'true' &&
+      github.event.action != 'closed' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - run: bun run build
+      # The test harness destroys its isolated stack before this step succeeds.
+      # Reruns get a new stage so they cannot collide with an earlier attempt.
+      - name: Test deployed Worker
+        run: bun run test:integration
+        env:
+          ALCHEMY_TEST_STAGE: test-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy:
-    needs: [checks, cloudflare]
+    # Failed or skipped integration jobs block deployment through needs.
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds
+    needs: [checks, cloudflare, integration]
     if: >-
       needs.cloudflare.outputs.configured == 'true' &&
       github.event.action != 'closed' &&
@@ -72,14 +89,17 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.2
-      - run: bun install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: bun run build
-      - name: Deploy
-        run: bunx alchemy deploy --stage "$STAGE" --yes
+      - name: Select deployment stage
+        id: stage
+        run: bun tools/ci/deployment-stage.ts deploy >> "$GITHUB_OUTPUT"
         env:
+          PULL_REQUEST: ${{ github.event.number }}
+      - name: Deploy
+        run: bun run alchemy deploy --stage "$STAGE" --yes
+        env:
+          STAGE: ${{ steps.stage.outputs.stage }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PULL_REQUEST: ${{ github.event.number }}
@@ -99,20 +119,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.2
-      - run: bun install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: bun run build
-      - name: Verify preview stage
-        run: |
-          case "$STAGE" in
-            pr-[0-9]*) ;;
-            *) echo "Refusing to destroy a non-preview stage"; exit 1 ;;
-          esac
-      - name: Destroy preview
-        run: bunx alchemy destroy --stage "$STAGE" --yes
+      - name: Select and validate preview stage
+        id: stage
+        run: bun tools/ci/deployment-stage.ts cleanup >> "$GITHUB_OUTPUT"
         env:
+          PULL_REQUEST: ${{ github.event.number }}
+      - name: Destroy preview
+        run: bun run alchemy destroy --stage "$STAGE" --yes
+        env:
+          STAGE: ${{ steps.stage.outputs.stage }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PULL_REQUEST: ${{ github.event.number }}
