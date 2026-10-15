@@ -2,14 +2,22 @@
 
 This template is a way to learn Cloudflare by building and understanding our own stack. Use Ratstack as inspiration: study its choices, compare the trade-offs, and deliberately decide what belongs here rather than copying the whole stack.
 
-The following are candidates for future feature requests, not settled architecture or work scheduled for this PR.
+These are directions for future feature requests. The frontend decision is still open; no framework or component library is selected by this document.
 
-| Candidate                     | Questions for a future feature request                                                                                                                                                                      |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frontend foundation           | What should replace the temporary HTML frontend? Evaluate React, Effect RPC and Atoms, and TanStack integrations as options. Decide rendering, routing, forms, and how the frontend connects to the Worker. |
-| Opinionated frontend defaults | Which choices should the template make so a new application starts with a coherent approach? Explain each default and its trade-offs.                                                                       |
-| Design system                 | Choose a component foundation and establish typography, colors, spacing, accessibility, and interaction conventions. Include a small working example.                                                       |
-| XState                        | Evaluate state machines for a concrete workflow with meaningful states and transitions. Establish how it would compose with Effect and when ordinary Effect operations are sufficient.                      |
-| Ratstack review               | Review its architecture, conventions, and developer experience. Identify ideas to adopt, adapt, or leave out, then create focused feature requests for the useful ones.                                     |
+## Future work
 
-Before implementing a candidate, write a small feature request stating the problem, the learning goal, the proposed choice and alternatives, what is out of scope, and how we will know it works. Check the current template and supported Alchemy, Effect, and Cloudflare capabilities first. Keep each request small enough to understand and review independently.
+- **Choose an opinionated frontend stack.** Make a deliberate choice, replace the temporary HTML frontend, and establish a coherent approach to rendering, routing, state, forms, and API communication. The goal is to choose defaults and build on them.
+- **Build quality into the tooling.** Combine agent skills with deterministic scripts, lint rules, formatters, and checks to maintain high-quality frontend and backend code. For UI/UX, cover correct component usage, spacing, padding, color tokens, accessibility, and interaction patterns. Investigate component-library skills and integration with the existing Ultracite tooling. Encode mechanically checkable rules in tools; use skills and review for decisions that require judgment. Visual foundations are part of this work, alongside mechanisms that help agents apply them consistently.
+- **Evaluate XState.** Try state machines on a concrete workflow with meaningful states and transitions, and establish how they compose with Effect.
+- **Learn from Ratstack.** Review its architecture, conventions, tooling, and developer experience. Create focused requests for ideas worth adopting or adapting here.
+
+## Frontend considerations
+
+These capture current preferences and concerns to investigate, rather than verified framework limitations:
+
+- **Astro is the strongest preference**, provided we can use its architecture well. Resolve how the desired interactive React components would fit without defaulting to `client:load` across every page or fragmenting the application into excessive islands.
+- **Svelte is particularly interesting to try.** Assess whether the desired component libraries have suitable equivalents; rebuilding a component collection may cost more than it is worth.
+- **React with Effect RPC and Atoms, plus TanStack integrations**, is another candidate, with compatibility with the desired React components as a consideration.
+- **Foldkit** is a candidate to investigate for its Effect-native approach and Cloudflare integration.
+
+Use a small representative UI to compare the candidates before choosing. Check current integrations and component support, then turn the chosen direction into focused feature requests with clear scope and acceptance criteria.
