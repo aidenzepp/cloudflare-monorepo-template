@@ -2,6 +2,7 @@
 
 Start with [onboarding](onboarding.md) for the architecture, source map, local workflow, and approach to choosing native capabilities. Agents also follow [repository instructions](../AGENTS.md) and the relevant repo-local skills.
 
+- [Future direction](future-direction.md): candidates for feature requests, frontend and design choices, and learning from Ratstack.
 - [Alchemy on Cloudflare](alchemy/cloudflare/README.md): upstream references and guidance for implementing this stack.
 - [Configuration and imports](alchemy/configuration.md): settings, project identity, providers, and source aliases.
 - [Testing](alchemy/cloudflare/testing.md): cloud-test isolation, teardown, and interrupted-run recovery.
