@@ -11,7 +11,7 @@ Before implementation or review, read [references/examples.md](references/exampl
 
 ## Native capability review
 
-Apply this review before implementing a nontrivial operation, not only after deciding to build a custom parser, adapter, stream consumer, dependency container, client wrapper, retry loop, or resource-management mechanism:
+Apply this review before implementing effectful operations, including small platform calls wrapped in `Effect.sync`, `Effect.try`, `Effect.promise`, or `Effect.tryPromise`. These constructors integrate APIs; they do not establish that the owning capability is absent from Effect. Keep discovery proportional to the operation, but do not skip it because the wrapper is only one line.
 
 1. State the contract: accepted input, output, failures, limits, lifecycle, and guarantees.
 2. Inspect the owning repository patterns and pinned dependency versions.
@@ -24,6 +24,16 @@ Do not claim that a native capability is unavailable without checking. Do not up
 
 ## Capabilities to inspect
 
+- Console and standard I/O: `Console` for console output and `Stdio` for streams,
+  sinks, and typed I/O failures before wrapping `console` or `process.stdout`.
+  Distinguish machine-readable output from diagnostic `Effect.log` records.
+  Verify exact bytes, newline handling, output destination, and failure behavior
+  when replacing an output boundary; use existing subprocess tests when they
+  already assert the contract.
+- Platform and everyday utilities: `FileSystem`, `Path`, `effect/process`, `Clock`,
+  `DateTime`, `Duration`, `Random`, and `effect/encoding` before direct host APIs or custom
+  equivalents. Check runtime-specific platform layers and installed module
+  documentation for the required operation.
 - Infrastructure and bindings: Alchemy's supported resources, Outputs, providers,
   runtime clients, and test harness before direct control-plane API calls or custom
   binding injection. Infrastructure providers and request-time binding layers have
