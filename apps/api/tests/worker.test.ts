@@ -3,10 +3,17 @@ import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Test from "alchemy/Test/Bun";
 import * as Effect from "effect/Effect";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as OpenApi from "effect/http-api/OpenApi";
 import * as HttpClient from "effect/http/HttpClient";
 import { Api } from "@api/app/api";
 import ApiWorker from "@api/app/worker";
+import { testMode } from "@test/config";
+
+/**
+ * Requires local emulation before registering any resource deployment hooks.
+ */
+const dev = Effect.runSync(testMode(true).parse(ConfigProvider.fromEnv()));
 
 /**
  * Runs the actual Worker locally with isolated state and no cloud deployment.
@@ -17,7 +24,7 @@ import ApiWorker from "@api/app/worker";
  * @see https://github.com/alchemy-run/alchemy/blob/v2.0.0-beta.81/alchemy/src/Test/Core.ts
  */
 const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
-  dev: true,
+  dev,
   providers: Cloudflare.providers(),
   stage: "test-local",
   state: Alchemy.localState(),

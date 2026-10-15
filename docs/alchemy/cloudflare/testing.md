@@ -2,6 +2,8 @@
 
 Local tests (`bun test apps infra`) use workerd and do not deploy cloud resources. Cloud integration tests are explicitly invoked and deploy the real API Worker from `infra/stacks/integration.ts`. Its stack name derives from `Project.stackName` with `-integration-tests`, separating its state and resources from the application stack. It creates no GitHub preview comments.
 
+The Worker suite explicitly selects local mode; the cloud integration suite explicitly selects cloud mode. Both validate `ALCHEMY_TEST_DEV` through Effect Config before registering Alchemy hooks, because that override takes precedence over an explicit `dev` option in the pinned harness. Conflicting or invalid values fail before resource setup; unset or empty values preserve the suite's mode, as do matching boolean values. `ALCHEMY_DEV` cannot change either suite's explicit mode. Subprocess tests import the real suites with `Test.make` intercepted to verify this boundary without provisioning resources.
+
 ## Run and clean up
 
 After Cloudflare account setup and authorization to deploy test resources:

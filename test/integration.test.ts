@@ -4,7 +4,12 @@ import { expect } from "bun:test";
 import * as Effect from "effect/Effect";
 import * as ConfigProvider from "effect/ConfigProvider";
 import Stack from "@infra/stacks/integration";
-import { IntegrationTestStage } from "@test/config";
+import { IntegrationTestStage, testMode } from "@test/config";
+
+/**
+ * Requires cloud providers before registering any resource deployment hooks.
+ */
+const dev = Effect.runSync(testMode(false).parse(ConfigProvider.fromEnv()));
 
 /**
  * Validates the test process stage before registering deployment hooks.
@@ -23,6 +28,7 @@ const stage = Effect.runSync(IntegrationTestStage.parse(ConfigProvider.fromEnv()
  * @see https://alchemy.run/cloudflare/tutorial/part-3/
  */
 const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
+  dev,
   providers: Cloudflare.providers(),
   stage,
   state: Cloudflare.state(),
