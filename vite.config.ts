@@ -26,7 +26,7 @@ export default defineConfig({
   lint: {
     extends: [core, antiSlop],
     ignorePatterns: ["dist/**", ".agents/**"],
-    jsPlugins: ["./tools/lint-plugin.mjs", "@stylistic/eslint-plugin"],
+    jsPlugins: ["./tools/lint/plugin.mjs", "@stylistic/eslint-plugin"],
     // Keep application and infrastructure imports stable when files move.
     // Node-loaded lint plugins retain relative .mjs imports because Node does not use TS paths.
     // https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports

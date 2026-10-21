@@ -7,7 +7,7 @@ test("allows kebab-case directories", () => {
     [],
   );
   expect(kebabCaseViolations("alchemy.run.ts")).toEqual([]);
-  expect(kebabCaseViolations("tools/no-built-in-try-catch.mjs")).toEqual([]);
+  expect(kebabCaseViolations("tools/lint/no-built-in-try-catch.mjs")).toEqual([]);
 });
 
 test("reports PascalCase, camelCase, and snake_case directories", () => {
