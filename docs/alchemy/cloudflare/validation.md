@@ -1,6 +1,6 @@
 # Request validation responses
 
-`apps/api/src/platform/http/validation/` owns the shared HTTP validation boundary. Application assembly installs `ValidationResponses` globally in `src/app/http.ts`; features keep their input constraints in Effect schemas.
+`apps/api/src/platform/http/validation/` owns the shared HTTP validation boundary. Application assembly installs `ValidationResponses` globally in `src/server/http.ts`; endpoint modules keep their input constraints in Effect schemas.
 
 Request parameter, header, query, and payload schema failures return HTTP 400 with this contract:
 

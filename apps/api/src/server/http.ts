@@ -1,11 +1,11 @@
 import * as Layer from "effect/Layer";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as HttpApiScalar from "effect/http-api/HttpApiScalar";
-import { Api } from "@api/app/api";
-import { DocumentationPaths } from "@api/app/documentation";
-import { makeHealthzHandlers } from "@api/features/healthz/handlers";
-import { makeLlmsHandlers } from "@api/features/llms/handlers";
-import { ValidationResponses } from "@api/platform/http/validation/middleware";
+import { Api } from "@api/api";
+import { DocumentationPaths } from "@api/documentation";
+import { ValidationResponses } from "@platform/http/validation/middleware";
+import { makeHealthzHandlers } from "@server/healthz/http";
+import { makeLlmsHandlers } from "@server/llms/http";
 
 /**
  * Registers API handlers, the OpenAPI document, and Effect's bundled Scalar UI.

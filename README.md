@@ -10,7 +10,7 @@ bun run build
 bun run dev
 bun run check
 bun run build
-bun test apps infra
+bun test apps infra tools
 ```
 
 `apps/web` contains a replaceable frontend scaffold; its current implementation does not establish the long-term frontend architecture. See [temporary frontend](docs/onboarding.md#temporary-frontend) before extending it. `apps/api` owns the Effect HTTP API. The root `alchemy.run.ts` defines the application deployment stack and yields the Effect-native API Worker, which currently serves the built frontend assets.
@@ -28,7 +28,7 @@ No Cloudflare account or cloud deployment is required. The Worker compatibility
 date matches the newest date supported by the pinned local workerd runtime.
 
 The tests cover health, unsupported requests, OpenAPI, Scalar, discovery, validation, and built
-frontend asset routing. `bun test apps infra` also checks stage selection and preview
+frontend asset routing. `bun test apps infra tools` also checks stage selection and preview
 cleanup validation without deploying resources. Cloud integration tests remain a separate command.
 
 ## Cloud integration tests
@@ -50,6 +50,6 @@ Versions are pinned, including the Alchemy v2 beta. No dependency release-age po
 
 Statement spacing inserts blank lines between top-level declarations and calls, between a local call group and a following const declaration, before returns, after complete if/else statements, and after Effect logs. Logs remain beneath the operations they describe.
 
-API features live under `apps/api/src/features/<feature>/`, with contracts in `api.ts` and handlers in `handlers.ts`. `src/app/` owns application assembly: `api.ts` composes contracts, `http.ts` provides handlers and documentation, and `worker.ts` wires the runtime. Whole-app Worker tests live under `apps/api/tests/`; focused tests stay beside their implementation. Add `src/platform/` for concrete runtime integrations when needed. `GET /api/healthz` is the reference liveness endpoint. Unmatched requests use Effect’s built-in `HttpServerError.RouteNotFound` (empty HTTP 404); expected feature failures should be declared in endpoint error schemas. The HTTP API modules in the pinned Effect version are marked unstable upstream.
+HTTP contracts live under `apps/api/src/api/`. `api.ts` composes the groups, and each group has its own module, such as `healthz.ts`. Handlers and Worker assembly live under `apps/api/src/server/`: `worker.ts` wires the runtime, `http.ts` provides handlers and documentation, and each group handler lives at `<group>/http.ts`. Whole-app Worker tests live under `apps/api/tests/`; focused tests stay beside their implementation. Add `src/platform/` for concrete runtime integrations when needed. Add `src/domain/` when a domain model exists. `GET /api/healthz` is the reference liveness endpoint. Unmatched requests use Effect’s built-in `HttpServerError.RouteNotFound` (empty HTTP 404); expected feature failures should be declared in endpoint error schemas. The HTTP API modules in the pinned Effect version are marked unstable upstream.
 
 Production follows [Alchemy’s Effect HTTP API guide](https://alchemy.run/cloudflare/apis/effect-http-api/): `Cloudflare.Worker` construction returns an HTTP effect from `HttpRouter.toHttpEffect`. The guide’s platform stub includes the additional compression fields required by the pinned Effect version. `bun run build` builds frontend assets; Alchemy builds the Worker during dev/deploy. `bun run dev:web` runs frontend-only Vite development. There is no separate Wrangler configuration or Cloudflare Vite plugin.

@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as GitHub from "alchemy/GitHub";
 import * as Layer from "effect/Layer";
 import * as Output from "alchemy/Output";
-import ApiWorker from "@api/app/worker";
+import ApiWorker from "@server/worker";
 import { PreviewPullRequest } from "@infra/config/stages";
 import { Project } from "@infra/config/project";
 

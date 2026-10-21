@@ -25,7 +25,7 @@ Cleanup calls the same helper in `cleanup` mode, which additionally validates th
 
 When credentials are available, main deploys to `prod`; same-repository PRs deploy to `pr-<number>` and receive a preview comment. Closing a PR destroys its preview stage. Fork PRs receive checks only. Cleanup uses main's stack definition and rejects non-preview stages; concurrency groups serialize deployment and cleanup for the same PR.
 
-The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. The account-free HTTP and stage-selection tests run with `bun test apps infra`. Stage tests also execute the CI helper and confirm rejected cleanup contexts emit no output; they never invoke Alchemy deployment or destruction.
+The workflow pins Bun to our package-manager version, installs the frozen lockfile, and builds frontend assets before Alchemy deploy or destroy. The account-free HTTP, stage-selection, and tools tests run with `bun test apps infra tools`. Stage tests also execute the CI helper and confirm rejected cleanup contexts emit no output; they never invoke Alchemy deployment or destruction.
 
 ## Cloud integration gate
 

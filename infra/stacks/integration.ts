@@ -4,7 +4,7 @@ import { Stage } from "alchemy/Stage";
 import * as Config from "effect/Config";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
-import ApiWorker from "@api/app/worker";
+import ApiWorker from "@server/worker";
 import { Project } from "@infra/config/project";
 import { IntegrationStage } from "@infra/config/stages";
 

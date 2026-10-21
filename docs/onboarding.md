@@ -12,16 +12,16 @@ Alchemy owns infrastructure provisioning, resource state, bindings, and the Work
 
 ```mermaid
 flowchart LR
-  Stack["alchemy.run.ts<br/>application provisioning"] --> Worker["app/worker.ts<br/>runtime and assets"]
+  Stack["alchemy.run.ts<br/>application provisioning"] --> Worker["server/worker.ts<br/>runtime and assets"]
   Request["Incoming request"] --> Worker
-  Worker -->|API and discovery| HTTP["app/http.ts<br/>router layers"]
+  Worker -->|API and discovery| HTTP["server/http.ts<br/>router layers"]
   Worker -->|Frontend| Assets["dist/<br/>built apps/web assets"]
-  HTTP --> Handlers["features/*/handlers.ts<br/>request work"]
-  Api["app/api.ts<br/>composed feature contracts"] --> HTTP
+  HTTP --> Handlers["server/*/http.ts<br/>request work"]
+  Api["api/api.ts<br/>composed contracts"] --> HTTP
   Api --> OpenAPI["OpenAPI and Scalar"]
 ```
 
-Worker construction assembles services and handlers; request work runs inside the HTTP effect. This follows [Alchemy's Effect HTTP API guide](https://alchemy.run/cloudflare/apis/effect-http-api/). The current platform stub is a documented pinned-version adaptation in `app/worker.ts`; inspect its contract before changing filesystem or response behavior.
+Worker construction assembles services and handlers; request work runs inside the HTTP effect. This follows [Alchemy's Effect HTTP API guide](https://alchemy.run/cloudflare/apis/effect-http-api/). The current platform stub is a documented pinned-version adaptation in `server/worker.ts`; inspect its contract before changing filesystem or response behavior.
 
 ## Temporary frontend
 
@@ -31,23 +31,23 @@ The current HTML frontend is a temporary scaffold. Its entry-file layout and sta
 
 Paths below are relative to the repository root.
 
-| Question                                                               | Owning source                                                                                                                                                             |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| What resources does the application deploy?                            | [alchemy.run.ts](../alchemy.run.ts)                                                                                                                                       |
-| How is the Worker constructed, and how are assets and telemetry wired? | [apps/api/src/app/worker.ts](../apps/api/src/app/worker.ts)                                                                                                               |
-| Which API contracts are exposed?                                       | [apps/api/src/app/api.ts](../apps/api/src/app/api.ts) and each feature's `api.ts`                                                                                         |
-| Where are handler layers and API documentation registered?             | [apps/api/src/app/http.ts](../apps/api/src/app/http.ts)                                                                                                                   |
-| Where does feature behavior belong?                                    | `apps/api/src/features/<feature>/`; start with [healthz](../apps/api/src/features/healthz/handlers.ts)                                                                    |
-| Where do concrete runtime integrations belong?                         | `apps/api/src/platform/`; [validation](../apps/api/src/platform/http/validation/middleware.ts) is the existing HTTP boundary                                              |
-| Where are documentation route paths shared?                            | [apps/api/src/app/documentation.ts](../apps/api/src/app/documentation.ts)                                                                                                 |
-| Where is frontend source?                                              | [apps/web/src/main.ts](../apps/web/src/main.ts) and [index.html](../index.html)                                                                                           |
-| Where are identity and deployment stages defined?                      | [infra/config/project.ts](../infra/config/project.ts) and [stages.ts](../infra/config/stages.ts)                                                                          |
-| Which stack creates GitHub deployment credentials?                     | [infra/stacks/github.ts](../infra/stacks/github.ts); a separate admin operation                                                                                           |
-| Which stack owns disposable cloud-test resources?                      | [infra/stacks/integration.ts](../infra/stacks/integration.ts)                                                                                                             |
-| Where are local and cloud tests?                                       | [apps/api/tests/worker.test.ts](../apps/api/tests/worker.test.ts), focused colocated tests, and [test/integration.test.ts](../test/integration.test.ts)                   |
-| Where are CI decisions and custom lint rules?                          | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml), [tools/ci/deployment-stage.ts](../tools/ci/deployment-stage.ts), and [vite.config.ts](../vite.config.ts) |
+| Question                                                               | Owning source                                                                                                                                                                                                                |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| What resources does the application deploy?                            | [alchemy.run.ts](../alchemy.run.ts)                                                                                                                                                                                          |
+| How is the Worker constructed, and how are assets and telemetry wired? | [apps/api/src/server/worker.ts](../apps/api/src/server/worker.ts)                                                                                                                                                            |
+| Which API contracts are exposed?                                       | [apps/api/src/api/api.ts](../apps/api/src/api/api.ts) and each group module in `apps/api/src/api/`                                                                                                                           |
+| Where are handler layers and API documentation registered?             | [apps/api/src/server/http.ts](../apps/api/src/server/http.ts)                                                                                                                                                                |
+| Where does request behavior belong?                                    | `apps/api/src/server/<group>/http.ts`; start with [healthz](../apps/api/src/server/healthz/http.ts)                                                                                                                          |
+| Where do concrete runtime integrations belong?                         | `apps/api/src/platform/`; [validation](../apps/api/src/platform/http/validation/middleware.ts) is the existing HTTP boundary                                                                                                 |
+| Where are documentation route paths shared?                            | [apps/api/src/api/documentation.ts](../apps/api/src/api/documentation.ts)                                                                                                                                                    |
+| Where is frontend source?                                              | [apps/web/src/main.ts](../apps/web/src/main.ts) and [index.html](../index.html)                                                                                                                                              |
+| Where are identity and deployment stages defined?                      | [infra/config/project.ts](../infra/config/project.ts) and [stages.ts](../infra/config/stages.ts)                                                                                                                             |
+| Which stack creates GitHub deployment credentials?                     | [infra/stacks/github.ts](../infra/stacks/github.ts); a separate admin operation                                                                                                                                              |
+| Which stack owns disposable cloud-test resources?                      | [infra/stacks/integration.ts](../infra/stacks/integration.ts)                                                                                                                                                                |
+| Where are local and cloud tests?                                       | [apps/api/tests/worker.test.ts](../apps/api/tests/worker.test.ts), focused colocated tests, and [test/integration.test.ts](../test/integration.test.ts)                                                                      |
+| Where are CI decisions and custom lint rules?                          | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml), [tools/ci/deployment-stage.ts](../tools/ci/deployment-stage.ts), [tools/lint/plugin.mjs](../tools/lint/plugin.mjs), and [vite.config.ts](../vite.config.ts) |
 
-TypeScript uses `@api/*`, `@infra/*`, `@test/*`, and `@stack` aliases, including sibling imports. Use `bun run alchemy` for Alchemy commands so its launcher resolves the project's aliases. See [configuration and imports](alchemy/configuration.md).
+TypeScript uses `@api/*`, `@server/*`, `@platform/*`, `@infra/*`, `@test/*`, and `@stack` aliases, including sibling imports. Use `bun run alchemy` for Alchemy commands so its launcher resolves the project's aliases. See [configuration and imports](alchemy/configuration.md).
 
 ## First local pass
 
@@ -57,7 +57,7 @@ Use the pinned Bun version declared by `packageManager` in `package.json`. From 
 bun install --frozen-lockfile
 bun run check
 bun run build
-bun test apps infra
+bun test apps infra tools
 ```
 
 These checks do not deploy cloud resources. `check` runs formatting, lint, and TypeScript; `build` builds frontend assets; local tests start the actual Worker in workerd with isolated local state and automatic cleanup. Build before Worker tests so assets are current. Focused boundary tests cover validation and configuration without deploying infrastructure.
@@ -90,8 +90,8 @@ When custom glue is necessary, record the actual gap and the evidence checked at
 ## Make a focused change
 
 1. Read the owning source, relevant guide, and applicable repo-local skills before editing. Follow definitions through imports and providers to understand the behavior being changed.
-2. Establish schema meaning, data preservation, and compatibility requirements. Keep runtime assembly in `app/`, feature behavior in `features/`, and concrete integrations in `platform/`.
-3. Keep public contracts in feature API declarations. OpenAPI and Scalar derive from them; `llms.txt` is discovery. See [API documentation](alchemy/cloudflare/api-documentation.md) and [validation](alchemy/cloudflare/validation.md).
+2. Establish schema meaning, data preservation, and compatibility requirements. Keep contracts in `api/`, handlers and Worker assembly in `server/`, and concrete integrations in `platform/`.
+3. Keep public contracts in `api/` declarations. OpenAPI and Scalar derive from them; `llms.txt` is discovery. See [API documentation](alchemy/cloudflare/api-documentation.md) and [validation](alchemy/cloudflare/validation.md).
 4. Trace meaningful internal operations and log useful decisions and causes. Use the [observability skill](../.agents/skills/trace-effect/SKILL.md); do not generate tests for every span or log.
 5. Run the relevant behavior checks and normal hygiene commands. Keep commits atomic with the [commit skill](../.agents/skills/conventional-commits/SKILL.md), and follow the user's review and publishing instructions.
 

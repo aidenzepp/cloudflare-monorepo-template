@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/setup
       - run: bun run check
       - run: bun run build
-      - run: bun test apps infra
+      - run: bun test apps infra tools
       - run: bun run api:export
       - uses: actions/upload-artifact@v4
         with:

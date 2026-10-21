@@ -6,8 +6,8 @@ import * as Effect from "effect/Effect";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as OpenApi from "effect/http-api/OpenApi";
 import * as HttpClient from "effect/http/HttpClient";
-import { Api } from "@api/app/api";
-import ApiWorker from "@api/app/worker";
+import { Api } from "@api/api";
+import ApiWorker from "@server/worker";
 import { testMode } from "@test/config";
 
 /**

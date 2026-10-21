@@ -1,6 +1,6 @@
 import * as Effect from "effect/Effect";
 import * as OpenApi from "effect/http-api/OpenApi";
-import { Api } from "@api/app/api";
+import { Api } from "@api/api";
 
 /**
  * Exports the assembled API contract for documentation and downstream generators.
