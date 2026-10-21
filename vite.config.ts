@@ -48,6 +48,18 @@ export default defineConfig({
           ],
         },
       },
+      {
+        // This test imports bun:test from plain JavaScript. The type-aware checker
+        // does not load those types for an .mjs file; the assertions still run under bun test.
+        files: ["tools/**/*.test.mjs"],
+        rules: {
+          "typescript/no-unsafe-argument": "off",
+          "typescript/no-unsafe-assignment": "off",
+          "typescript/no-unsafe-call": "off",
+          "typescript/no-unsafe-member-access": "off",
+          "typescript/no-unsafe-return": "off",
+        },
+      },
     ],
     rules: {
       "@stylistic/padding-line-between-statements": [
@@ -71,6 +83,8 @@ export default defineConfig({
       "max-classes-per-file": "off",
       // Effect adapters return existing promises without introducing async wrappers.
       "typescript/promise-function-async": "off",
+      "unicorn/filename-case": ["error", { case: "kebabCase" }],
+      "workspace/kebab-case-paths": "error",
       "workspace/no-built-in-try-catch": "error",
       "workspace/require-bucket-destroy-policy": "error",
     },
