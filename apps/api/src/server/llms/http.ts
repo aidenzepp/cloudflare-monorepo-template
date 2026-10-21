@@ -28,7 +28,7 @@ Use the OpenAPI document for endpoint paths, request schemas, responses, errors,
 ## API documentation
 
 - [OpenAPI JSON](${new URL(DocumentationPaths.openapiJson, origin).href}): Machine-readable API contract.
-- [Interactive API reference](${new URL(DocumentationPaths.docs, origin).href}): Browse the API and try requests.
+- [Interactive API reference](${new URL(DocumentationPaths.openapiDocs, origin).href}): Browse the API and try requests.
 
 `;
 });

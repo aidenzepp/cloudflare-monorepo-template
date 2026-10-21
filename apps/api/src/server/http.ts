@@ -24,7 +24,7 @@ const ApiRoutes = HttpApiBuilder.layer(Api, {
  * @see https://effect.website/docs/v4/api/effect/http-api/HttpApiScalar
  */
 const DocsRoute = HttpApiScalar.layer(Api, {
-  path: DocumentationPaths.docs,
+  path: DocumentationPaths.openapiDocs,
   scalar: { withDefaultFonts: false },
 });
 
