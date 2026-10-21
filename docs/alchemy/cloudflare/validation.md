@@ -8,11 +8,11 @@ Request parameter, header, query, and payload schema failures return HTTP 400 wi
 {
   "_tag": "RequestValidationError",
   "message": "Request validation failed.",
-  "details": [{ "path": ["id"], "message": "Expected a UUID." }]
+  "issues": [{ "path": ["id"], "message": "Expected a UUID." }]
 }
 ```
 
-The detail message above is illustrative. Effect's installed schema formatter preserves custom schema/check messages and supplies defaults when none are configured; paths identify fields within the failed request component, and an empty path indicates a failure of the whole value, such as malformed JSON. The boundary does not manually parse or rewrite schema messages. Set `message` on a schema for type failures, set `message` on a check for constraint failures, and use `Schema.annotateKey({ messageMissingKey: "..." })` for missing required fields. HTTP tests verify all three override forms reach callers unchanged.
+The issue message above is illustrative. `issues` is the list returned by Effect's Standard Schema formatter. It preserves custom schema and check messages and supplies defaults when none are configured. Each path uses the formatter's property keys, so a field is a string and an array index is a number. An empty path indicates a failure of the whole value, such as malformed JSON. The boundary does not rename the list or rewrite the messages. Set `message` on a schema for type failures, set `message` on a check for constraint failures, and use `Schema.annotateKey({ messageMissingKey: "..." })` for missing required fields. HTTP tests verify all three override forms reach callers unchanged.
 
 For endpoints with validated inputs, declare `RequestValidationError` in the endpoint's `error` schema alongside any feature errors. This makes the generated OpenAPI contract and typed clients describe the response emitted by the shared boundary. Health and discovery currently have no validated request fields; no demonstration endpoint is added to production.
 

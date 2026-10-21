@@ -120,8 +120,8 @@ test(
       const error = yield* Schema.decodeUnknownEffect(RequestValidationError)(body);
       expect(error._tag).toBe("RequestValidationError");
       expect(error.message).toBe("Request validation failed.");
-      expect(error.details[0].path).toEqual(input.path);
-      expect(error.details[0].message.length).toBeGreaterThan(0);
+      expect(error.issues[0].path).toEqual(input.path);
+      expect(error.issues[0].message.length).toBeGreaterThan(0);
     }
 
     expect(yield* Ref.get(calls)).toBe(0);
@@ -165,7 +165,7 @@ test(
 
       const body = yield* Effect.tryPromise(() => response.json());
       const error = yield* Schema.decodeUnknownEffect(RequestValidationError)(body);
-      expect(error.details).toEqual([{ message: input.message, path: ["name"] }]);
+      expect(error.issues).toEqual([{ message: input.message, path: ["name"] }]);
     }
   }).pipe(Effect.scoped),
 );
@@ -218,6 +218,6 @@ test(
     expect(response?.content?.["application/json"]?.schema).toEqual({
       $ref: "#/components/schemas/RequestValidationErrorEncoded",
     });
-    expect(spec.components.schemas.RequestValidationErrorEncoded.required).toContain("details");
+    expect(spec.components.schemas.RequestValidationErrorEncoded.required).toContain("issues");
   }),
 );
