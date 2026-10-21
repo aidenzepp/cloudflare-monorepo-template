@@ -20,7 +20,7 @@ Before writing Effect code, read `node_modules/effect/AGENTS.md` completely and 
 
 Preserve the pinned dependency versions and this repository's Alchemy/Bun testing conventions when applying upstream guidance.
 
-Use `.agents/skills/effect-design/SKILL.md` when writing or reviewing Effect code and derived API/configuration composition. Read its labeled examples before applying its guidance.
+Use `.agents/skills/effect-design/SKILL.md` for the native-capability review and this repository's local Effect rulings. Effect structure and style stay with the installed guide above.
 
 Use `.agents/skills/trace-effect/SKILL.md` when adding or changing effectful application operations or reviewing their observability. Maximize useful tracing and logging across meaningful operations, including database queries and external requests, to diagnose failures and inefficiencies. Review coverage without generating tests for every span or log message.
 
