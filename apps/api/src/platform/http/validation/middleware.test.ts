@@ -16,9 +16,9 @@ import * as HttpApiEndpoint from "effect/http-api/HttpApiEndpoint";
 import * as HttpApiGroup from "effect/http-api/HttpApiGroup";
 import * as HttpApiSchema from "effect/http-api/HttpApiSchema";
 import * as OpenApi from "effect/http-api/OpenApi";
-import { HttpPlatformStub } from "@api/app/worker";
-import { RequestValidationError } from "@api/platform/http/validation/error";
-import { ValidationResponses } from "@api/platform/http/validation/middleware";
+import { RequestValidationError } from "@platform/http/validation/error";
+import { ValidationResponses } from "@platform/http/validation/middleware";
+import { HttpPlatformStub } from "@server/worker";
 
 /**
  * Runs focused HTTP boundary checks in Alchemy's Effect-aware local harness.

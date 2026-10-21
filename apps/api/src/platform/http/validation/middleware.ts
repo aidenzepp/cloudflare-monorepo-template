@@ -4,10 +4,7 @@ import * as Schema from "effect/Schema";
 import * as HttpRouter from "effect/http/HttpRouter";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 import * as HttpApiError from "effect/http-api/HttpApiError";
-import {
-  RequestValidationError,
-  requestValidationError,
-} from "@api/platform/http/validation/error";
+import { RequestValidationError, requestValidationError } from "@platform/http/validation/error";
 
 /**
  * Encodes the public validation contract before producing an HTTP response.

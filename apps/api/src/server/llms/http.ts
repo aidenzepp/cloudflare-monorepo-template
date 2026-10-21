@@ -1,8 +1,8 @@
 import * as Effect from "effect/Effect";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
-import { Api } from "@api/app/api";
-import { DocumentationPaths } from "@api/app/documentation";
+import { Api } from "@api/api";
+import { DocumentationPaths } from "@api/documentation";
 
 /**
  * Serves project discovery with documentation links on the request's origin.

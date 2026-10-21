@@ -59,11 +59,13 @@ Keep static project identity as checked-in data. Positional CLI arguments belong
 
 ## Source imports
 
-`tsconfig.json` maps `@api/*` to `apps/api/src/`, `@infra/*` to `infra/`,
-and `@test/*` to the root cloud-test directory `test/`. `@stack` maps directly
-to the root `alchemy.run.ts` application stack; the separate GitHub admin stack
-lives in `infra/stacks/github.ts`. App-owned tests under `apps/api/tests/`
-import application source through `@api/*`.
+`tsconfig.json` maps `@api/*` to `apps/api/src/api/`, `@server/*` to
+`apps/api/src/server/`, `@platform/*` to `apps/api/src/platform/`, `@infra/*`
+to `infra/`, and `@test/*` to the root cloud-test directory `test/`. `@stack`
+maps directly to the root `alchemy.run.ts` application stack; the separate
+GitHub admin stack lives in `infra/stacks/github.ts`. App-owned tests under
+`apps/api/tests/` import contracts through `@api/*`, handlers and the Worker
+through `@server/*`, and runtime integrations through `@platform/*`.
 
 TypeScript source imports use these aliases, including sibling imports. Oxlint's
 `no-restricted-imports` rule rejects relative paths in `.ts` and `.tsx` files.

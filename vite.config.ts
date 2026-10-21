@@ -40,7 +40,7 @@ export default defineConfig({
               patterns: [
                 {
                   message:
-                    "Use a configured @api/*, @infra/*, or @test/* alias instead of a relative source import.",
+                    "Use a configured @api/*, @server/*, @platform/*, @infra/*, or @test/* alias instead of a relative source import.",
                   regex: "^\\.{1,2}/",
                 },
               ],

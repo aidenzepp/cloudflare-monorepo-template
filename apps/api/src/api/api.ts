@@ -1,6 +1,6 @@
 import * as HttpApi from "effect/http-api/HttpApi";
-import { HealthzApi } from "@api/features/healthz/api";
-import { LlmsApi } from "@api/features/llms/api";
+import { HealthzApi } from "@api/healthz";
+import { LlmsApi } from "@api/llms";
 
 /**
  * Composes the feature contracts exposed by this Worker.
