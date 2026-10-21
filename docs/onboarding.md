@@ -57,7 +57,7 @@ Use the pinned Bun version declared by `packageManager` in `package.json`. From 
 bun install --frozen-lockfile
 bun run check
 bun run build
-bun test apps infra
+bun test apps infra tools
 ```
 
 These checks do not deploy cloud resources. `check` runs formatting, lint, and TypeScript; `build` builds frontend assets; local tests start the actual Worker in workerd with isolated local state and automatic cleanup. Build before Worker tests so assets are current. Focused boundary tests cover validation and configuration without deploying infrastructure.

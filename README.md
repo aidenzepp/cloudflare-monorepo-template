@@ -10,7 +10,7 @@ bun run build
 bun run dev
 bun run check
 bun run build
-bun test apps infra
+bun test apps infra tools
 ```
 
 `apps/web` contains a replaceable frontend scaffold; its current implementation does not establish the long-term frontend architecture. See [temporary frontend](docs/onboarding.md#temporary-frontend) before extending it. `apps/api` owns the Effect HTTP API. The root `alchemy.run.ts` defines the application deployment stack and yields the Effect-native API Worker, which currently serves the built frontend assets.
@@ -28,7 +28,7 @@ No Cloudflare account or cloud deployment is required. The Worker compatibility
 date matches the newest date supported by the pinned local workerd runtime.
 
 The tests cover health, unsupported requests, OpenAPI, Scalar, discovery, validation, and built
-frontend asset routing. `bun test apps infra` also checks stage selection and preview
+frontend asset routing. `bun test apps infra tools` also checks stage selection and preview
 cleanup validation without deploying resources. Cloud integration tests remain a separate command.
 
 ## Cloud integration tests
