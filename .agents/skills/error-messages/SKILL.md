@@ -105,7 +105,7 @@ For APIs and machine callers, avoid making clients parse prose. Provide:
 - whole-error context such as resource, region, limit, actual value, retry time, draft ID, or support link when relevant
 - item-specific details such as field violations, row violations, missing permissions, or quota violations
 
-Keep dynamic facts in `details` or `context` if they also appear in the human message.
+Keep dynamic facts in `details` or `context` if they also appear in the human message. Schema validation is the exception: `RequestValidationError.issues` is Effect's Standard Schema V1 issue list, and that field stays `issues`.
 
 Prefer a small boundary payload unless the repo already has a stronger local convention:
 

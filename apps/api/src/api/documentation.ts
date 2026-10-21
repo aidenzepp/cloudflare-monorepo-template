@@ -2,7 +2,7 @@
  * Owns documentation paths shared by route registration and discovery links.
  */
 export const DocumentationPaths = {
-  docs: "/api/docs",
   llms: "/llms.txt",
+  openapiDocs: "/api/docs",
   openapiJson: "/api/openapi.json",
 } as const;

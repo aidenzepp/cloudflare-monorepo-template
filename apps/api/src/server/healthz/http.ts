@@ -3,24 +3,27 @@ import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import { Api } from "@api/api";
 
 /**
- * Implements the liveness contract with a schema-checked successful response.
- * The healthz.get span demonstrates native tracing without changing the response.
- * Its debug log stays below the default info threshold to avoid noisy health polls.
- * HttpApiBuilder checks endpoint coverage and the handler's success/error types.
+ * Returns the liveness response without reading external dependencies.
  *
- * @returns The handler layer constructed during the Worker construction phase.
+ * @returns The schema-checked status identifying the Cloudflare runtime.
+ */
+export const getHealthz = Effect.fn("healthz.get")(
+  function* getHealthz() {
+    yield* Effect.logDebug("Liveness check completed");
+
+    return { ok: true, runtime: "cloudflare" } as const;
+  },
+  Effect.annotateLogs({ endpoint: "healthz" }),
+);
+
+/**
+ * Registers the liveness handler on the healthz group.
+ * The group builder runs when the router layer is constructed. `getHealthz`
+ * owns the `healthz.get` span for each request.
+ *
  * @see https://alchemy.run/cloudflare/apis/effect-http-api/
  * @see https://alchemy.run/cloudflare/tutorial/part-6/#add-structured-logging
  */
-export const makeHealthzHandlers = () =>
-  HttpApiBuilder.group(Api, "healthz", (handlers) =>
-    handlers.handle("get", () =>
-      Effect.gen(function* checkLiveness() {
-        yield* Effect.logDebug("Liveness check completed").pipe(
-          Effect.annotateLogs({ endpoint: "healthz" }),
-        );
-
-        return { ok: true, runtime: "cloudflare" } as const;
-      }).pipe(Effect.withSpan("healthz.get")),
-    ),
-  );
+export const HealthzApiHandlers = HttpApiBuilder.group(Api, "healthz", (handlers) =>
+  handlers.handle("get", getHealthz),
+);

@@ -6,7 +6,7 @@ import * as Etag from "effect/http/Etag";
 import * as HttpPlatform from "effect/http/HttpPlatform";
 import * as HttpRouter from "effect/http/HttpRouter";
 import { DocumentationPaths } from "@api/documentation";
-import { makeHttpLayer } from "@server/http";
+import { HttpLayer } from "@server/http";
 
 /**
  * Supplies the JSON-only platform stub used by Alchemy's HTTP API guide.
@@ -29,9 +29,10 @@ export const HttpPlatformStub = Layer.succeed(HttpPlatform.HttpPlatform, {
 
 /**
  * Declares the API as an Alchemy Effect-native Worker.
- * Construction creates handler layers; Alchemy supplies platform services when
- * building the HTTP effect, matching its installed StateStore implementation. Request
- * work remains inside endpoint handlers. Alchemy owns the Cloudflare fetch adapter.
+ * The router layer is assembled with the Worker module. Alchemy supplies platform
+ * services when building the HTTP effect, matching its installed StateStore
+ * implementation. Request work remains inside endpoint handlers. Alchemy owns the
+ * Cloudflare fetch adapter.
  *
  * Cloudflare.Telemetry forwards Effect spans into native Workers traces. Alchemy
  * enables Worker logs by default; the telemetry layer enables traces and requires
@@ -50,7 +51,7 @@ export default Cloudflare.Worker(
   },
   Effect.sync(() => ({
     fetch: HttpRouter.toHttpEffect(
-      makeHttpLayer().pipe(Layer.provide([Etag.layer, HttpPlatformStub, Path.layer])),
+      HttpLayer.pipe(Layer.provide([Etag.layer, HttpPlatformStub, Path.layer])),
     ),
   })).pipe(Effect.provide(Cloudflare.Telemetry())),
 );

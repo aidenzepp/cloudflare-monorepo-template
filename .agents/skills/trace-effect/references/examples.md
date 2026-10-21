@@ -86,7 +86,7 @@ Decisive evidence: `handlers.handle("get", getHealthz)` points to `Effect.fn("he
 ```ts
 import * as Effect from "effect/Effect";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
-import { Api } from "@api/app/api";
+import { Api } from "@api/api";
 
 /**
  * Returns the liveness response without reading external dependencies.
@@ -94,21 +94,20 @@ import { Api } from "@api/app/api";
  * @returns The schema-checked status identifying the Cloudflare runtime.
  */
 export const getHealthz = Effect.fn("healthz.get")(function* getHealthz() {
-  yield* Effect.logDebug("Liveness check completed").pipe(
-    Effect.annotateLogs({ endpoint: "healthz" }),
-  );
+  yield* Effect.logDebug("Liveness check completed");
 
   return { ok: true, runtime: "cloudflare" } as const;
-});
+}, Effect.annotateLogs({ endpoint: "healthz" }));
 
 /**
  * Registers the named liveness handler against the existing API contract.
+ * The group builder runs at layer construction and does not replace the handler span.
  *
- * @returns The handler layer used during Worker construction.
  * @see https://alchemy.run/cloudflare/apis/effect-http-api/
  */
-export const makeHealthzHandlers = () =>
-  HttpApiBuilder.group(Api, "healthz", (handlers) => handlers.handle("get", getHealthz));
+export const HealthzApiHandlers = HttpApiBuilder.group(Api, "healthz", (handlers) =>
+  handlers.handle("get", getHealthz),
+);
 ```
 
 ### NEGATIVE — Mistake a JavaScript function name for a span name
@@ -118,7 +117,7 @@ Decisive evidence: registration still references `getHealthz`, and its generator
 ```ts
 import * as Effect from "effect/Effect";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
-import { Api } from "@api/app/api";
+import { Api } from "@api/api";
 
 /**
  * Returns the liveness response without reading external dependencies.
@@ -126,21 +125,20 @@ import { Api } from "@api/app/api";
  * @returns The schema-checked status identifying the Cloudflare runtime.
  */
 export const getHealthz = Effect.fn(function* getHealthz() {
-  yield* Effect.logDebug("Liveness check completed").pipe(
-    Effect.annotateLogs({ endpoint: "healthz" }),
-  );
+  yield* Effect.logDebug("Liveness check completed");
 
   return { ok: true, runtime: "cloudflare" } as const;
-});
+}, Effect.annotateLogs({ endpoint: "healthz" }));
 
 /**
  * Registers the named liveness handler against the existing API contract.
+ * The group builder runs at layer construction and does not replace the handler span.
  *
- * @returns The handler layer used during Worker construction.
  * @see https://alchemy.run/cloudflare/apis/effect-http-api/
  */
-export const makeHealthzHandlers = () =>
-  HttpApiBuilder.group(Api, "healthz", (handlers) => handlers.handle("get", getHealthz));
+export const HealthzApiHandlers = HttpApiBuilder.group(Api, "healthz", (handlers) =>
+  handlers.handle("get", getHealthz),
+);
 ```
 
 ## Logging and preserved causes
