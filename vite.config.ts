@@ -84,6 +84,7 @@ export default defineConfig({
       // Effect adapters return existing promises without introducing async wrappers.
       "typescript/promise-function-async": "off",
       "unicorn/filename-case": ["error", { case: "kebabCase" }],
+      // Every apps/<name>/src is checked. Opt an app out in optedOutApps.
       "workspace/api-source-roles": "error",
       "workspace/kebab-case-paths": "error",
       "workspace/no-built-in-try-catch": "error",

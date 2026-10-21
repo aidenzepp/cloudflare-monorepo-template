@@ -11,12 +11,16 @@
  */
 
 /**
- * The repository prefix whose next directory must be an API source role.
+ * App names excused from Effect source roles.
+ *
+ * Every other directory under `apps/` is checked. Add a name only when that
+ * app's framework owns the directories inside `src`. `web` is excused because
+ * its frontend framework owns that layout.
  */
-const apiSourceRoot = ["apps", "api", "src"];
+export const optedOutApps = new Set(["web"]);
 
 /**
- * Directories permitted as the first child of `apps/api/src`.
+ * Directories permitted as the first child of an app's `src` directory.
  *
  * `domain` remains valid before that directory exists, so the first domain model
  * does not require a lint change. An empty role directory is still not created.
@@ -56,10 +60,11 @@ const relativePath = (cwd, filename) => {
 };
 
 /**
- * Reports a file under `apps/api/src` whose first directory is not a source role.
+ * Reports a file under `apps/<name>/src` whose first directory is not a source role.
  *
- * Paths outside that tree are ignored. A file placed directly in `apps/api/src` is
- * reported through its filename because that filename occupies the role position.
+ * Every app is checked. An app listed in {@link optedOutApps} is ignored. Tests,
+ * scripts, and trees outside `apps/` are ignored. A file placed directly in `src`
+ * is reported through its filename because that filename occupies the role position.
  *
  * @param {string} pathFromRoot Repository-relative path. Separators may be `/` or `\`.
  * @returns {string[]} The segment to move. An empty array means the path is allowed.
@@ -73,15 +78,16 @@ export const apiSourceRoleViolations = (pathFromRoot) => {
     .split("/")
     .flatMap((segment) => segment.split("\\"))
     .filter((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+  const filename = segments.pop();
+  const [root, appName, sourceDirectory, role] = segments;
 
-  const isApiSource = apiSourceRoot.every((segment, index) => segments[index] === segment);
-
-  if (!isApiSource) {
+  if (root !== "apps" || sourceDirectory !== "src") {
     return [];
   }
 
-  const filename = segments.pop();
-  const [role] = segments.slice(apiSourceRoot.length);
+  if (appName !== undefined && optedOutApps.has(appName)) {
+    return [];
+  }
 
   if (role === undefined) {
     return filename === undefined ? [] : [filename];
@@ -125,7 +131,7 @@ const apiSourceRolesRule = {
   },
   meta: {
     docs: {
-      description: "Require API source files to live in a role directory.",
+      description: "Require every app's source files to live in a role directory.",
     },
     messages: {
       apiSourceRole:
