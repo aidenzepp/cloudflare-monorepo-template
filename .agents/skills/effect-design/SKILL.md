@@ -28,5 +28,6 @@ For a pull stream, consume each element's nested content before advancing. Colle
 ## Local rulings
 
 - Directories and files use kebab-case. `unicorn/filename-case` enforces filenames and `workspace/kebab-case-paths` enforces directories. Effect fixtures use PascalCase file names such as `Api.ts` and `Users.ts`; this repository uses `api.ts` and `users.ts`.
+- Under `apps/api/src`, the first directory is `api`, `server`, `platform`, or `domain`. `workspace/api-source-roles` enforces it. `domain` may be absent until a model exists.
 - Inside a generator, keep `if`, `??`, or a ternary for a value check when a combinator would add no typed failure, resource, span, or dependency. Effect's guide still decides how to attach those four.
 - Caller-facing HTTP errors follow `.agents/skills/error-messages/SKILL.md`, including when the failure uses a built-in HTTP error class. Name the specific failure and the repair. Keep provider causes internal.

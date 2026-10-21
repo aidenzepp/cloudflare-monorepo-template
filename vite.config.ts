@@ -84,6 +84,7 @@ export default defineConfig({
       // Effect adapters return existing promises without introducing async wrappers.
       "typescript/promise-function-async": "off",
       "unicorn/filename-case": ["error", { case: "kebabCase" }],
+      "workspace/api-source-roles": "error",
       "workspace/kebab-case-paths": "error",
       "workspace/no-built-in-try-catch": "error",
       "workspace/require-bucket-destroy-policy": "error",
