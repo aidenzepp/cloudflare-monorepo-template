@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { apiSourceRoleViolations } from "./api-source-roles.mjs";
+import apiSourceRoles, { apiSourceRoleViolations } from "./api-source-roles.mjs";
 
 test("allows the API source roles", () => {
   expect(apiSourceRoleViolations("apps/api/src/api/healthz.ts")).toEqual([]);
@@ -17,6 +17,12 @@ test("reports a directory that is not a role", () => {
 
 test("reports a file placed directly in src", () => {
   expect(apiSourceRoleViolations("apps/api/src/worker.ts")).toEqual(["worker.ts"]);
+});
+
+test("points the repair at the local ruling and Effect's guide", () => {
+  expect(apiSourceRoles.meta.messages.apiSourceRole).toBe(
+    "Move {{segment}} under api, server, platform, or domain. This repo's Effect source layout and its exceptions are in .agents/skills/effect-design/SKILL.md, which follows node_modules/effect/AGENTS.md.",
+  );
 });
 
 test("ignores paths outside apps/api/src", () => {

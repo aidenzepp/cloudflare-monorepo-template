@@ -129,7 +129,7 @@ const apiSourceRolesRule = {
     },
     messages: {
       apiSourceRole:
-        "Move {{segment}} under api, server, platform, or domain. The first directory inside apps/api/src must be one of those roles.",
+        "Move {{segment}} under api, server, platform, or domain. This repo's Effect source layout and its exceptions are in .agents/skills/effect-design/SKILL.md, which follows node_modules/effect/AGENTS.md.",
     },
     schema: [],
     type: "problem",
